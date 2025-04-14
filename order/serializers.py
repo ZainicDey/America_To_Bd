@@ -3,7 +3,8 @@ from . import models
 class OrderRequestSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.OrderRequest
-        fields = ['id', 'product_url', 'quantity', 'description', 'status']
+        fields = ['id', 'user', 'product_url', 'quantity', 'description', 'status']
+        read_only_fields = ['id', 'user']
     
 class ResolvedOrderSerializer(serializers.ModelSerializer):
     class Meta:

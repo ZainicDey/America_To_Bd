@@ -21,8 +21,11 @@ class RegisterView(APIView):
             password = payload['password']
             email = payload['email']
             if User.objects.filter(email=email).exists():
+                print('here')
                 raise ValidationError("Email exists")
             phone = payload['phone']
+            if models.UserModel.objects.filter(phone=phone).exists():
+                raise ValidationError("Phone exists")
             user = User.objects.create(username=username, email=email)
             user.set_password(password)
             user.save()

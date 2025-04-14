@@ -7,5 +7,5 @@ router.register(r'order_request', views.OrderRequestViewset)
 router.register(r'resolve_order', views.ResolveOrderViewset)
 urlpatterns = [
     path('', include(router.urls)),
-    path('tracking/<str:tracker_id>/', views.TrackingOrderViewset.as_view(), name='tracking-order'),
+    path('tracking/<str:tracker_id>/', views.TrackingOrderViewset.as_view(), name='track-order')
 ]
