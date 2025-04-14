@@ -16,3 +16,4 @@ class TrackingOrderSerializer(serializers.ModelSerializer):
     class Meta:
         model =  models.TrackingOrder
         fields = '__all__'
+        read_only_fields = ['is_paid', 'is_shipped', 'is_received']

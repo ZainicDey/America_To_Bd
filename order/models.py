@@ -40,6 +40,8 @@ class ResolvedOrder(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     def save(self, *args, **kwargs):
+        is_new = self.pk is None
+
         if not self.tracker:
             self.tracker = generate_unique_tracker()
         self.order.status = 'AC'
@@ -47,12 +49,12 @@ class ResolvedOrder(models.Model):
         
         super().save(*args, **kwargs)
         
-        if not TrackingOrder.objects.filter(resolved_order=self).exists():
+        if is_new:
             TrackingOrder.objects.create(resolved_order=self, user=self.order.user)
 
 class TrackingOrder(models.Model):
     resolved_order = models.OneToOneField(ResolvedOrder, on_delete=models.CASCADE)
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     is_paid = models.BooleanField(default=False)
     is_shipped = models.BooleanField(default=False)
     is_received = models.BooleanField(default=False)
