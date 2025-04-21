@@ -1,12 +1,17 @@
 from django.shortcuts import render
-from rest_framework import viewsets, permissions, views, status
+from rest_framework import viewsets, permissions, views, status, filters
 from rest_framework.response import Response
 from . import models, serializers
+from django_filters.rest_framework import DjangoFilterBackend
 # Create your views here.
 
 class OrderRequestViewset(viewsets.ModelViewSet):
     serializer_class = serializers.OrderRequestSerializer
     queryset = models.OrderRequest.objects.all()
+    filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
+    filterset_fields = ['status']
+    search_fields = ['user__username', 'user__email' ]
+    ordering_fields = ['created_at', 'updated_at']
 
     def get_permissions(self):
         if self.action in ['update', 'destroy', 'partial_update']:
@@ -28,6 +33,11 @@ class OrderRequestViewset(viewsets.ModelViewSet):
 class ResolveOrderViewset(viewsets.ModelViewSet):
     serializer_class = serializers.ResolvedOrderSerializer
     queryset = models.ResolvedOrder.objects.all()
+    filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
+    filterset_fields = ['status', 'order__user__email']
+    search_fields = ['tracker', 'order__user__email', 'order__user__username']
+    ordering_fields = ['created_at', 'updated_at']
+
 
     def get_permissions(self):
         if self.action not in ['list']:

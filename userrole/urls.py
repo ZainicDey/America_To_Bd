@@ -10,4 +10,5 @@ urlpatterns = [
     path('register/', views.RegisterView.as_view(), name='register'),
     path('token/', CustomTokenObtainPairView.as_view(), name='get_token'),
     path('token/refresh/', TokenRefreshView.as_view(), name='refresh'),
+    path('<int:param>', views.UserDetailsView.as_view()),
 ]

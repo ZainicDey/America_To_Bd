@@ -35,6 +35,7 @@ class ResolvedOrder(models.Model):
     tax = models.DecimalField(decimal_places=2, max_digits=10) 
     cost = models.IntegerField()
     is_paid = models.BooleanField(default=False)
+    estimated_arrival = models.DateField(null=True, blank=True)
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
