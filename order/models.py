@@ -35,7 +35,7 @@ class ResolvedOrder(models.Model):
     tax = models.DecimalField(decimal_places=2, max_digits=10) 
     cost = models.IntegerField()
     is_paid = models.BooleanField(default=False)
-    estimated_arrival = models.DateField(null=True, blank=True)
+    # estimated_arrival = models.DateField(null=True, blank=True)
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -52,6 +52,13 @@ class ResolvedOrder(models.Model):
         
         if is_new:
             TrackingOrder.objects.create(resolved_order=self, user=self.order.user)
+            
+    def update_order_status(self, status):
+        self.order.status = status
+        if status=="PD":
+            self.is_paid=True
+            self.save()
+        self.order.save()
 
 class TrackingOrder(models.Model):
     resolved_order = models.OneToOneField(ResolvedOrder, on_delete=models.CASCADE)

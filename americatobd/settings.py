@@ -39,9 +39,12 @@ INSTALLED_APPS = [
 
     'userrole',
     'order',
+    'payment',
 
     'rest_framework',
     'rest_framework_simplejwt',
+
+    'corsheaders',
 ]
 import os
 STATIC_URL = 'static/'
@@ -59,6 +62,9 @@ REST_FRAMEWORK = {
 }
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
+    'django.middleware.common.CommonMiddleware',
+
     'whitenoise.middleware.WhiteNoiseMiddleware', 
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -69,6 +75,12 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
+CORS_ALLOW_ALL_ORIGINS = True  
+CORS_ALLOWED_ORIGINS = [
+    "https://8puzzle-ai-solved.vercel.app",
+]
+CORS_ALLOW_HEADERS = ["*"]
+CORS_ALLOW_METHODS = ["GET", "POST", "OPTIONS"]
 ROOT_URLCONF = 'americatobd.urls'
 
 TEMPLATES = [
@@ -152,6 +164,7 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+#token
 from datetime import timedelta
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(days=30),
@@ -191,6 +204,8 @@ SIMPLE_JWT = {
     "SLIDING_TOKEN_OBTAIN_SERIALIZER": "rest_framework_simplejwt.serializers.TokenObtainSlidingSerializer",
     "SLIDING_TOKEN_REFRESH_SERIALIZER": "rest_framework_simplejwt.serializers.TokenRefreshSlidingSerializer",
 }
+
+#mail
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'  # Change based on your email provider
 EMAIL_PORT = 587
@@ -199,3 +214,9 @@ EMAIL_HOST_USER = 'your_email@example.com'
 EMAIL_HOST_PASSWORD = 'your_email_password'  # Use environment variables for security
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 SUPPORT_EMAIL = 'support@example.com'  # Your support email
+
+
+#ssl
+SSLCOMMERZ_STORE_ID = "zaini680d23560578a@ssl"
+SSLCOMMERZ_STORE_PASSWORD = "anikfaarns"
+SSLCOMMERZ_SANDBOX = True  # False for production

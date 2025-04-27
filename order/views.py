@@ -34,10 +34,10 @@ class ResolveOrderViewset(viewsets.ModelViewSet):
     serializer_class = serializers.ResolvedOrderSerializer
     queryset = models.ResolvedOrder.objects.all()
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
-    filterset_fields = ['status', 'order__user__email']
+    filterset_fields = ['order__status', 'order__user__email']
     search_fields = ['tracker', 'order__user__email', 'order__user__username']
     ordering_fields = ['created_at', 'updated_at']
-
+    
 
     def get_permissions(self):
         if self.action not in ['list']:
