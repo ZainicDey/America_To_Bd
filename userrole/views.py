@@ -51,7 +51,7 @@ class UserDetailsView(APIView):
             )
         user = get_object_or_404(User, id=param)
         return Response({
-            "username": user.name,
+            "username": user.username,
             "email": user.email,
             "phone": user.userinfo.phone
         })
