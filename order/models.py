@@ -12,30 +12,31 @@ def generate_unique_tracker(length=12):
         
 # Create your models here.
 class OrderRequest(models.Model):
-    STATUS_CHOICES = [
-        ('PD', 'Pending'),
-        ('AC', 'Accepted'),
-        ('OC', 'Order Complete')
-    ]
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     product_url = models.URLField()
     quantity = models.IntegerField()
     description = models.TextField(max_length=300)
-    status = models.CharField(max_length=2, choices=STATUS_CHOICES, default='PD')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
 class ResolvedOrder(models.Model):
-    order = models.OneToOneField(OrderRequest, on_delete=models.CASCADE, related_name='ResolvedOrder')
+    STATUS_CHOICES = [
+        ('AC', 'Accepted'),
+        ('CN', 'Canceled'),
+        ('OC', 'Order Complete')
+    ]
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    product_url = models.URLField()
     tracker = models.CharField(blank=True, editable=False, unique=True, max_length=20)
     quantity = models.IntegerField()
+    description = models.TextField(blank=True, null=True)
     usd_price = models.DecimalField(decimal_places=2, max_digits=10) 
     converted_price = models.DecimalField(decimal_places=2, max_digits=10) 
     custom_fee = models.IntegerField(default=0)
     tax = models.DecimalField(decimal_places=2, max_digits=10) 
+    status = models.CharField(max_length=2, choices=STATUS_CHOICES, default='AC')
     cost = models.IntegerField()
     is_paid = models.BooleanField(default=False)
-    # estimated_arrival = models.DateField(null=True, blank=True)
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -45,13 +46,11 @@ class ResolvedOrder(models.Model):
 
         if not self.tracker:
             self.tracker = generate_unique_tracker()
-        self.order.status = 'AC'
-        self.order.save()
         
         super().save(*args, **kwargs)
         
         if is_new:
-            TrackingOrder.objects.create(resolved_order=self, user=self.order.user)
+            TrackingOrder.objects.create(resolved_order=self, user=self.user)
             
     def update_order_status(self, status):
         self.order.status = status

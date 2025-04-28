@@ -9,7 +9,7 @@ class OrderRequestViewset(viewsets.ModelViewSet):
     serializer_class = serializers.OrderRequestSerializer
     queryset = models.OrderRequest.objects.all()
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
-    filterset_fields = ['status']
+    filterset_fields = ['user__email']
     search_fields = ['user__username', 'user__email' ]
     ordering_fields = ['created_at', 'updated_at']
 
@@ -28,16 +28,16 @@ class OrderRequestViewset(viewsets.ModelViewSet):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.save(user=request.user)
+        
         return Response(serializer.data)
 
 class ResolveOrderViewset(viewsets.ModelViewSet):
     serializer_class = serializers.ResolvedOrderSerializer
     queryset = models.ResolvedOrder.objects.all()
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
-    filterset_fields = ['order__status', 'order__user__email']
-    search_fields = ['tracker', 'order__user__email', 'order__user__username']
+    filterset_fields = ['status', 'user__email']
+    search_fields = ['tracker', 'user__email', 'user__username', 'user__userinfo__phone']
     ordering_fields = ['created_at', 'updated_at']
-    
 
     def get_permissions(self):
         if self.action not in ['list']:
@@ -48,7 +48,19 @@ class ResolveOrderViewset(viewsets.ModelViewSet):
         if self.request.user.is_staff:
             return models.ResolvedOrder.objects.all()
         else:
-            return models.ResolvedOrder.objects.filter(order__user=self.request.user)
+            return models.ResolvedOrder.objects.filter(user=self.request.user)
+        
+    def create(self, request):
+        order_id=request.data.pop('order_id', None)
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        if order_id is not None:
+            models.OrderRequest.objects.filter(id=order_id).delete()
+
+        serializer.save(user=request.user) 
+        
+        return Response(serializer.data)
 
 class TrackingOrderViewset(views.APIView):  
     def get(self, request, tracker_id):
