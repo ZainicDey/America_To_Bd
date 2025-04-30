@@ -11,4 +11,5 @@ urlpatterns = [
     path('auth/signin/', CustomTokenObtainPairView.as_view(), name='get_token'),
     path('auth/refresh/', TokenRefreshView.as_view(), name='refresh'),
     path('user/<int:param>', views.UserDetailsView.as_view()),
+    # path('user/address', views.AddressView.as_view()),
 ]

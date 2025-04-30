@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 import secrets
 import string
+# from userrole.models import Address
 
 def generate_unique_tracker(length=12):
     chars = string.ascii_uppercase + string.digits
@@ -15,6 +16,8 @@ class OrderRequest(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     product_url = models.URLField()
     quantity = models.IntegerField()
+    # address
+    # is_box = models.BooleanField(default=False)
     description = models.TextField(max_length=300)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -23,7 +26,8 @@ class ResolvedOrder(models.Model):
     STATUS_CHOICES = [
         ('AC', 'Accepted'),
         ('CN', 'Canceled'),
-        ('OC', 'Order Complete')
+        ('PD', 'Payment Done'),
+        ('SP', 'Shipped')
     ]
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     product_url = models.URLField()
@@ -34,10 +38,11 @@ class ResolvedOrder(models.Model):
     converted_price = models.DecimalField(decimal_places=2, max_digits=10) 
     custom_fee = models.IntegerField(default=0)
     tax = models.DecimalField(decimal_places=2, max_digits=10) 
-    status = models.CharField(max_length=2, choices=STATUS_CHOICES, default='AC')
+    # box_fee = models.IntegerField(default=0, blank=True, null=True)
+    # address = models.OneToOneField(Address, related_name='Resolved_order')
     cost = models.IntegerField()
+    status = models.CharField(max_length=2, choices=STATUS_CHOICES, default='AC')
     is_paid = models.BooleanField(default=False)
-
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

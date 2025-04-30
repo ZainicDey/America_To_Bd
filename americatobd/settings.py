@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt',
 
     'corsheaders',
+    'django_filters',
 ]
 import os
 STATIC_URL = 'static/'
@@ -217,6 +218,5 @@ SUPPORT_EMAIL = 'support@example.com'  # Your support email
 
 
 #ssl
-SSLCOMMERZ_STORE_ID = "zaini680d23560578a@ssl"
-SSLCOMMERZ_STORE_PASSWORD = "anikfaarns"
-SSLCOMMERZ_SANDBOX = True  # False for production
+AAMARPAY_STORE_ID = "aamarpaytest"
+AAMARPAY_SIGNATURE_KEY= "dbb74894e82415a2f7ff0ec3a97e4183"

@@ -16,3 +16,8 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
         data['is_staff'] = self.user.is_staff
         data['is_superuser'] = self.user.is_superuser
         return data
+
+# class AddressSerializer(serializers.ModelSerializer):
+#      class Meta:
+#         model =  models.Address
+#         fields = '__all__'

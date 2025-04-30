@@ -9,3 +9,11 @@ class UserModel(models.Model):
     def __str__(self):
         return self.user.username
 
+
+# class Address(models.Model):
+#     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='userinfo')
+#     dictrict = models.CharField(max_length=30)
+#     city = models.CharField(max_length=30)
+#     road = models.TextField(max_length=30)
+#     post = models.CharField(max_length=30)
+    
