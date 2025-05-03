@@ -64,6 +64,22 @@ class ResolveOrderViewset(viewsets.ModelViewSet):
         serializer.save(user=user) 
         
         return Response(serializer.data)
+    
+    def partial_update(self, request):
+        status = request.data['status']
+        id = request.data['id']
+
+        resolved_order = models.ResolvedOrder.objects.get(id)
+        tracker = models.TrackingOrder.objects.get(resolved_order=resolved_order)
+
+        if status == 'PD':
+            tracker.is_paid=True
+        elif status == 'S':
+            tracker.is_paid=True
+        else : tracker.is_received = True
+
+        
+        tracker.save()
 
 class TrackingOrderViewset(views.APIView):  
     def get(self, request, tracker_id):
