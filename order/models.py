@@ -17,7 +17,7 @@ class OrderRequest(models.Model):
     product_url = models.URLField()
     quantity = models.IntegerField()
     # address
-    # is_box = models.BooleanField(default=False)
+    is_box = models.BooleanField(default=False)
     description = models.TextField(max_length=300)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -38,7 +38,7 @@ class ResolvedOrder(models.Model):
     converted_price = models.DecimalField(decimal_places=2, max_digits=10) 
     custom_fee = models.IntegerField(default=0)
     tax = models.DecimalField(decimal_places=2, max_digits=10) 
-    # box_fee = models.IntegerField(default=0, blank=True, null=True)
+    box_fee = models.IntegerField(default=0, blank=True, null=True)
     # address = models.OneToOneField(Address, related_name='Resolved_order')
     cost = models.IntegerField()
     status = models.CharField(max_length=2, choices=STATUS_CHOICES, default='AC')
