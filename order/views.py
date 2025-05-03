@@ -56,9 +56,12 @@ class ResolveOrderViewset(viewsets.ModelViewSet):
         serializer.is_valid(raise_exception=True)
 
         if order_id is not None:
-            models.OrderRequest.objects.filter(id=order_id).delete()
+            order = models.OrderRequest.objects.get(id=order_id)
+            user = order.user
+            order.delete()  
+        else: user = request.user
 
-        serializer.save(user=request.user) 
+        serializer.save(user=user) 
         
         return Response(serializer.data)
 
