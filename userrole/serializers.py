@@ -17,7 +17,10 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
         data['is_superuser'] = self.user.is_superuser
         return data
 
-# class AddressSerializer(serializers.ModelSerializer):
-#      class Meta:
-#         model =  models.Address
-#         fields = '__all__'
+class AddressSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.Address
+        fields = '__all__'
+        extra_kwargs = {
+            'user': {'write_only': True}
+        }

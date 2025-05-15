@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 import secrets
 import string
+from userrole.models import Address
 # from userrole.models import Address
 
 def generate_unique_tracker(length=12):
@@ -16,9 +17,10 @@ class OrderRequest(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     product_url = models.URLField()
     quantity = models.IntegerField()
-    # address
     is_box = models.BooleanField(default=False)
     description = models.TextField(max_length=300)
+    address = models.ForeignKey(Address, related_name='order_request', on_delete=models.SET_NULL, null=True)
+    
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -39,10 +41,10 @@ class ResolvedOrder(models.Model):
     custom_fee = models.IntegerField(default=0)
     tax = models.DecimalField(decimal_places=2, max_digits=10) 
     box_fee = models.IntegerField(default=0, blank=True, null=True)
-    # address = models.OneToOneField(Address, related_name='Resolved_order')
+    address = models.ForeignKey(Address, related_name='resolved_order', on_delete=models.SET_NULL, null=True)
     cost = models.IntegerField()
     status = models.CharField(max_length=2, choices=STATUS_CHOICES, default='AC')
-    is_paid = models.BooleanField(default=False)
+
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -65,7 +67,7 @@ class ResolvedOrder(models.Model):
         self.order.save()
 
 class TrackingOrder(models.Model):
-    resolved_order = models.OneToOneField(ResolvedOrder, on_delete=models.CASCADE)
+    resolved_order = models.OneToOneField(ResolvedOrder, on_delete=models.CASCADE, related_name='track_status')
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     is_paid = models.BooleanField(default=False)
     is_shipped = models.BooleanField(default=False)

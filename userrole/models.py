@@ -10,10 +10,10 @@ class UserModel(models.Model):
         return self.user.username
 
 
-# class Address(models.Model):
-#     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='userinfo')
-#     dictrict = models.CharField(max_length=30)
-#     city = models.CharField(max_length=30)
-#     road = models.TextField(max_length=30)
-#     post = models.CharField(max_length=30)
+class Address(models.Model):
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, related_name='address', null=True)
+    district = models.CharField(max_length=30)
+    city = models.CharField(max_length=30)
+    road = models.TextField(max_length=30)
+    post = models.CharField(max_length=30)
     

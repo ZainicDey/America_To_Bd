@@ -40,7 +40,8 @@ INSTALLED_APPS = [
     'userrole',
     'order',
     'payment',
-
+    'product',
+    
     'rest_framework',
     'rest_framework_simplejwt',
 

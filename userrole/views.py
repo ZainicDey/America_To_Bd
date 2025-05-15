@@ -2,7 +2,7 @@ from . import serializers
 from django.core.exceptions import ValidationError
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework import status
+from rest_framework import status, viewsets, permissions
 from rest_framework.permissions import AllowAny
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import User 
@@ -11,6 +11,7 @@ from django.shortcuts import get_object_or_404
 import jwt
 from django.http import JsonResponse
 from rest_framework_simplejwt.views import TokenObtainPairView
+from rest_framework.exceptions import PermissionDenied
 from django.contrib.auth import authenticate
 from . import models
 # Create your views here.
@@ -55,3 +56,16 @@ class UserDetailsView(APIView):
             "email": user.email,
             "phone": user.userinfo.phone
         })
+    
+class AddressViews(viewsets.ModelViewSet):
+    serializer_class = serializers.AddressSerializer
+    permission_classes = [permissions.IsAuthenticated] 
+    queryset = models.Address.objects.all()
+
+    def get_queryset(self):
+        if self.request.user.is_staff:
+            return models.Address.objects.all()
+        return models.Address.objects.filter(user=self.request.user)
+    
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)

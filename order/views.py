@@ -28,7 +28,6 @@ class OrderRequestViewset(viewsets.ModelViewSet):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.save(user=request.user)
-        
         return Response(serializer.data)
 
 class ResolveOrderViewset(viewsets.ModelViewSet):
@@ -58,28 +57,25 @@ class ResolveOrderViewset(viewsets.ModelViewSet):
         if order_id is not None:
             order = models.OrderRequest.objects.get(id=order_id)
             user = order.user
+            address = order.address
             order.delete()  
         else: user = request.user
 
-        serializer.save(user=user) 
+        serializer.save(user=user, address=address) 
         
         return Response(serializer.data)
     
-    def partial_update(self, request):
+    def partial_update(self, request, pk=None):
         status = request.data['status']
-        id = request.data['id']
-
-        resolved_order = models.ResolvedOrder.objects.get(id)
-        tracker = models.TrackingOrder.objects.get(resolved_order=resolved_order)
-
-        if status == 'PD':
-            tracker.is_paid=True
-        elif status == 'S':
-            tracker.is_paid=True
-        else : tracker.is_received = True
-
+        resolved_order = models.ResolvedOrder.objects.get(id = pk)
         
-        tracker.save()
+        resolved_order.track_status.status = status
+        resolved_order.status = status
+
+        resolved_order.save()
+        resolved_order.track_status.save()
+        
+        return Response({"message": f'product of tracking-id {resolved_order.tracker} status is successfully updated to {status}'})
 
 class TrackingOrderViewset(views.APIView):  
     def get(self, request, tracker_id):
