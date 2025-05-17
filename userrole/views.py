@@ -8,7 +8,7 @@ from django.contrib.auth import authenticate
 from django.contrib.auth.models import User 
 from datetime import datetime
 from django.shortcuts import get_object_or_404
-import jwt
+from rest_framework.decorators import api_view
 from django.http import JsonResponse
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework.exceptions import PermissionDenied
@@ -69,3 +69,49 @@ class AddressViews(viewsets.ModelViewSet):
     
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
+
+#super admin things..
+@api_view(['GET'])
+def admins(request):
+    if not request.user.is_superuser:
+        return Response({"message": "Not all users are allowed"}, status=403)
+    
+    admins = User.objects.filter(is_staff=True).exclude(email__isnull=True).exclude(email="").values_list('email', flat=True)
+    return Response({"admins": list(admins)}, status=200)
+
+@api_view(['POST'])
+def add_admin(request):
+    if not request.user.is_superuser:
+        return Response({"message": "Not all users are allowed"}, status=403)
+
+    email = request.data.get('email')
+    if not email:
+        return Response({"message": "Email is required"}, status=400)
+
+    try:
+        user = User.objects.get(email=email)
+        user.is_staff = True
+        user.save()
+        return Response({"message": f"{email} is now an admin."}, status=200)
+    except User.DoesNotExist:
+        return Response({"message": "User not found"}, status=404)
+
+@api_view(['POST'])
+def remove_admin(request):
+    if not request.user.is_superuser:
+        return Response({"message": "Not all users are allowed"}, status=403)
+
+    email = request.data.get('email')
+    if not email:
+        return Response({"message": "Email is required"}, status=400)
+
+    try:
+        user = User.objects.get(email=email)
+        if user is request.user:
+            return Response({"message": "you can not remove yourself as admin"}, status='403')
+        
+        user.is_staff = False
+        user.save()
+        return Response({"message": f"{email} is no longer an admin."}, status=200)
+    except User.DoesNotExist:
+        return Response({"message": "User not found"}, status=404)

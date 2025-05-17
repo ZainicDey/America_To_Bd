@@ -14,6 +14,11 @@ urlpatterns = [
     path('auth/signup/', views.RegisterView.as_view(), name='register'),
     path('auth/signin/', CustomTokenObtainPairView.as_view(), name='get_token'),
     path('auth/refresh/', TokenRefreshView.as_view(), name='refresh'),
+
     path('user/<int:param>', views.UserDetailsView.as_view()),
     path('user/', include(router.urls)),
+
+    path('superadmin/get_admin/', views.admins),
+    path('superadmin/add_admin/', views.add_admin),
+    path('superadmin/remove_admin/', views.remove_admin)
 ]

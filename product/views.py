@@ -19,5 +19,5 @@ class ProductView(viewsets.ModelViewSet):
     
 class CategoryView(viewsets.ModelViewSet):
     queryset = models.Category.objects.all()
-    serializer_class = serializers.CategorySeriailizer
+    serializer_class = serializers.CategorySerializer
     permission_classes = [permissions.IsAdminUser]
