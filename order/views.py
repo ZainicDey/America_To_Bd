@@ -75,6 +75,7 @@ class ResolveOrderViewset(viewsets.ModelViewSet):
         return Response({
             "message": f'Product of tracking-id {resolved_order.tracker} status successfully updated to {status}'
         })
+
 class TrackingOrderViewset(views.APIView):  
     def get(self, request, tracker_id):
         try:
