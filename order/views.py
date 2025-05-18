@@ -1,8 +1,10 @@
-from django.shortcuts import get_object_or_404
 from rest_framework import viewsets, permissions, views, status, filters
 from rest_framework.response import Response
+from rest_framework.pagination import PageNumberPagination
 from . import models, serializers
 from django_filters.rest_framework import DjangoFilterBackend
+from django.shortcuts import get_object_or_404
+from django.contrib.auth.models import User
 
 # Create your views here.
 
@@ -30,10 +32,26 @@ class OrderRequestViewset(viewsets.ModelViewSet):
         serializer.is_valid(raise_exception=True)
         serializer.save(user=request.user)
         return Response(serializer.data)
+    
+# class ResolvedOrderPagination(PageNumberPagination):
+    """"
+    {
+        "count": 123,
+        "next": "http://america-to-bd.vercel.app/order/resolved_order/?page=2",
+        "previous": null,
+        "results": [
+            {...}, {...}, ...
+        ]
+    }
+    """
+#     page_size = 5  # Customize the number of items per page
+#     page_size_query_param = 'page_size'
+#     max_page_size = 100
 
 class ResolveOrderViewset(viewsets.ModelViewSet):
     serializer_class = serializers.ResolvedOrderSerializer
     queryset = models.ResolvedOrder.objects.all()
+    # pagination_class = ResolvedOrderPagination
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
     filterset_fields = ['status', 'user__email']
     search_fields = ['tracker', 'user__email', 'user__username', 'user__userinfo__phone']
@@ -52,10 +70,13 @@ class ResolveOrderViewset(viewsets.ModelViewSet):
         
     def create(self, request):
         order_id=request.data.pop('order_id', None)
+        email=request.data.pop('email', None)
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
-        if order_id is not None:
+        if email:
+            user = User.objects.get(email=email)
+        elif order_id:
             order = models.OrderRequest.objects.get(id=order_id)
             user = order.user
             address = order.address
@@ -68,7 +89,7 @@ class ResolveOrderViewset(viewsets.ModelViewSet):
     
     def partial_update(self, request, pk=None):
         status = request.data['status']
-        resolved_order = models.ResolvedOrder.objects.get(id=pk)
+        resolved_order = get_object_or_404(models.ResolvedOrder, id=pk)
         
         resolved_order.update_order_status(status)
 

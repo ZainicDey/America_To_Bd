@@ -61,17 +61,27 @@ class ResolvedOrder(models.Model):
             TrackingOrder.objects.create(resolved_order=self, user=self.user)
             
     def update_order_status(self, status):
-        if status=="PD":
-            self.status = status
-            self.track_status.is_paid=True
+        valid_statuses = dict(self.STATUS_CHOICES).keys()
+        if status not in valid_statuses:
+            raise ValueError(f"Invalid status '{status}'")
+
+        self.status = status 
+
+        if status == "PD":
+            self.track_status.is_paid = True
+            self.track_status.is_shipped = False
+            self.track_status.is_received = False
         elif status == "CN":
-            self.status=status
+            pass
         elif status == "SP":
-            self.status = status
-            self.track_status.is_shipped=True
+            self.track_status.is_paid = True
+            self.track_status.is_shipped = True
+            self.track_status.is_received = False
         elif status == "UR":
-            self.status = status
-            self.track_status.is_received=True
+            self.track_status.is_paid = True
+            self.track_status.is_shipped = True
+            self.track_status.is_received = True
+
         self.save()
         self.track_status.save()
 
