@@ -29,7 +29,8 @@ class ResolvedOrder(models.Model):
         ('AC', 'Accepted'),
         ('CN', 'Canceled'),
         ('PD', 'Payment Done'),
-        ('SP', 'Shipped')
+        ('SP', 'Shipped'),
+        ('UR', 'User Received')
     ]
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     product_url = models.URLField()
@@ -60,11 +61,19 @@ class ResolvedOrder(models.Model):
             TrackingOrder.objects.create(resolved_order=self, user=self.user)
             
     def update_order_status(self, status):
-        self.order.status = status
         if status=="PD":
-            self.is_paid=True
-            self.save()
-        self.order.save()
+            self.status = status
+            self.track_status.is_paid=True
+        elif status == "CN":
+            self.status=status
+        elif status == "SP":
+            self.status = status
+            self.track_status.is_shipped=True
+        elif status == "UR":
+            self.status = status
+            self.track_status.is_received=True
+        self.save()
+        self.track_status.save()
 
 class TrackingOrder(models.Model):
     resolved_order = models.OneToOneField(ResolvedOrder, on_delete=models.CASCADE, related_name='track_status')

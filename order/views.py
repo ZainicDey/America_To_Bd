@@ -1,8 +1,9 @@
-from django.shortcuts import render
+from django.shortcuts import get_object_or_404
 from rest_framework import viewsets, permissions, views, status, filters
 from rest_framework.response import Response
 from . import models, serializers
 from django_filters.rest_framework import DjangoFilterBackend
+
 # Create your views here.
 
 class OrderRequestViewset(viewsets.ModelViewSet):
@@ -10,7 +11,7 @@ class OrderRequestViewset(viewsets.ModelViewSet):
     queryset = models.OrderRequest.objects.all()
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
     filterset_fields = ['user__email']
-    search_fields = ['user__username', 'user__email' ]
+    search_fields = ['user__username', 'user__email']
     ordering_fields = ['created_at', 'updated_at']
 
     def get_permissions(self):
@@ -67,16 +68,13 @@ class ResolveOrderViewset(viewsets.ModelViewSet):
     
     def partial_update(self, request, pk=None):
         status = request.data['status']
-        resolved_order = models.ResolvedOrder.objects.get(id = pk)
+        resolved_order = models.ResolvedOrder.objects.get(id=pk)
         
-        resolved_order.track_status.status = status
-        resolved_order.status = status
+        resolved_order.update_order_status(status)
 
-        resolved_order.save()
-        resolved_order.track_status.save()
-        
-        return Response({"message": f'product of tracking-id {resolved_order.tracker} status is successfully updated to {status}'})
-
+        return Response({
+            "message": f'Product of tracking-id {resolved_order.tracker} status successfully updated to {status}'
+        })
 class TrackingOrderViewset(views.APIView):  
     def get(self, request, tracker_id):
         try:

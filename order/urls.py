@@ -2,7 +2,8 @@ from django.urls import path,include
 from . import views
 from rest_framework.routers import DefaultRouter
 router = DefaultRouter()
-router.register(r'order_request', views.OrderRequestViewset)
+router.register(r'order_request', views.OrderRequestViewset),
+router.register(r'resolved_order', views.ResolveOrderViewset)
 
 urlpatterns = [
     path('', include(router.urls)),
