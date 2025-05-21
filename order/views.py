@@ -5,8 +5,18 @@ from . import models, serializers
 from django_filters.rest_framework import DjangoFilterBackend
 from django.shortcuts import get_object_or_404
 from django.contrib.auth.models import User
+from rest_framework.exceptions import NotFound
 
 # Create your views here.
+class IsOwnerOrAdmin(permissions.BasePermission):
+    """
+    Custom permission to only allow owners of an object or admins to delete it.
+    """
+    def has_object_permission(self, request, view, obj):
+        # Only allow delete if user is owner or admin
+        if request.method == 'DELETE':
+            return obj.user == request.user or request.user.is_staff
+        return True
 
 class OrderRequestViewset(viewsets.ModelViewSet):
     serializer_class = serializers.OrderRequestSerializer
@@ -17,8 +27,10 @@ class OrderRequestViewset(viewsets.ModelViewSet):
     ordering_fields = ['created_at', 'updated_at']
 
     def get_permissions(self):
-        if self.action in ['update', 'destroy', 'partial_update']:
+        if self.action in ['update', 'partial_update']:
             return [permissions.IsAdminUser()]
+        elif self.action == 'destroy':
+            return [IsOwnerOrAdmin()]
         return [permissions.IsAuthenticated()]
 
     def get_queryset(self):
@@ -68,24 +80,35 @@ class ResolveOrderViewset(viewsets.ModelViewSet):
         else:
             return models.ResolvedOrder.objects.filter(user=self.request.user)
         
+
     def create(self, request):
-        order_id=request.data.pop('order_id', None)
-        email=request.data.pop('email', None)
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
+        order_id = request.data.pop('order_id', None)
+        email = request.data.pop('email', None)
+        address = None
+        print(order_id)
 
         if email:
-            user = User.objects.get(email=email)
+            try:
+                user = User.objects.get(email=email)
+            except User.DoesNotExist:
+                raise NotFound("User with this email does not exist.")
         elif order_id:
-            order = models.OrderRequest.objects.get(id=order_id)
-            user = order.user
-            address = order.address
-            order.delete()  
-        else: user = request.user
+            try:
+                order = models.OrderRequest.objects.get(id=order_id)
+                user = order.user
+                address = order.address
+                order.delete()
+            except models.OrderRequest.DoesNotExist:
+                raise NotFound("OrderRequest with this ID does not exist.")
+        else:
+            user = request.user
 
-        serializer.save(user=user, address=address) 
-        
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save(user=user, address=address)
+
         return Response(serializer.data)
+
     
     def partial_update(self, request, pk=None):
         status = request.data['status']
