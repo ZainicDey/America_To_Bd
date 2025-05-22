@@ -70,9 +70,11 @@ class ResolveOrderViewset(viewsets.ModelViewSet):
     ordering_fields = ['created_at', 'updated_at']
 
     def get_permissions(self):
-        if self.action not in ['list']:
+        if self.action in ['update', 'partial_update']:
             return [permissions.IsAdminUser()]
-        return [permissions.IsAuthenticated()] 
+        elif self.action == 'destroy':
+            return [IsOwnerOrAdmin()]
+        return [permissions.IsAuthenticated()]
     
     def get_queryset(self):
         if self.request.user.is_staff:
