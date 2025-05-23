@@ -65,7 +65,7 @@ REST_FRAMEWORK = {
     'PAGE_SIZE': 10,
     # 'URL_TRAILING_SLASH': False,
 }
-APPEND_SLASH = False
+# APPEND_SLASH = False
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',

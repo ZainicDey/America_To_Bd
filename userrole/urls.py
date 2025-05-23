@@ -1,12 +1,16 @@
 from django.urls import path, include
 from . import views
+
+from rest_framework.routers import SimpleRouter
+
 from rest_framework_simplejwt.views import (
     TokenObtainPairView,
     TokenRefreshView,
 )
 from .views import CustomTokenObtainPairView
 from rest_framework.routers import DefaultRouter
-router = DefaultRouter()
+
+router = SimpleRouter(trailing_slash='')
 
 router.register(r'address', views.AddressViews)
 

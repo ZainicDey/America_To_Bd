@@ -1,7 +1,9 @@
 from django.urls import path,include
 from . import views
-from rest_framework.routers import DefaultRouter
-router = DefaultRouter()
+
+from rest_framework.routers import SimpleRouter
+router = SimpleRouter(trailing_slash='')
+
 router.register(r'order_request', views.OrderRequestViewset),
 router.register(r'resolved_order', views.ResolveOrderViewset)
 
