@@ -65,7 +65,6 @@ REST_FRAMEWORK = {
     'PAGE_SIZE': 10,
     # 'URL_TRAILING_SLASH': False,
 }
-# APPEND_SLASH = False
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -87,6 +86,8 @@ CORS_ALLOW_HEADERS = ["*"]
 CORS_ALLOW_METHODS = ["DELETE", "GET", "OPTIONS", "PATCH", "POST", "PUT"]
 
 ROOT_URLCONF = 'americatobd.urls'
+
+APPEND_SLASH = False
 
 TEMPLATES = [
     {

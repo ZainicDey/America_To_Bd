@@ -19,16 +19,30 @@ class RegisterView(APIView):
     def post(self, request):
         try:
             payload = request.data
-            username = payload['username']
+            first_name = payload['first_name'] or None
+            last_name = payload['last_name'] or None
             password = payload['password']
-            email = payload['email']
+            email = payload['email'] or None
+            phone = payload['phone']
+
+            if not email or not first_name or not last_name or not password or not phone:
+                raise ValidationError("All fields are required")
+            
+            if len(phone) != 11:
+                raise ValidationError("Phone number must be 11 digits")
+            
             if User.objects.filter(email=email).exists():
                 print('here')
                 raise ValidationError("Email exists")
             phone = payload['phone']
             if models.UserModel.objects.filter(phone=phone).exists():
                 raise ValidationError("Phone exists")
-            user = User.objects.create(username=username, email=email)
+            user = User.objects.create(
+                username=email,
+                first_name=first_name,
+                last_name=last_name,
+                email=email
+            )
             user.set_password(password)
             user.save()
             print(user)
@@ -39,6 +53,7 @@ class RegisterView(APIView):
                 'code': status.HTTP_400_BAD_REQUEST,
                 'message': str(e)
             })
+
 
 class CustomTokenObtainPairView(TokenObtainPairView):
     serializer_class = serializers.CustomTokenObtainPairSerializer

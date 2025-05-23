@@ -10,8 +10,8 @@ from . import bkash_views
 # ]   
 urlpatterns = [
     #bkash
-    # path('/bkash/start-payment/<int:pk>/', bkash_views.start_payment, name='start-payment'),
-    # path('bkash/callback/', views_views.bkash_callback, name='bkash-callback'),
+    path('bkash/start-payment/<int:pk>', bkash_views.start_payment, name='start-payment'),
+    path('bkash/callback', bkash_views.bkash_callback, name='bkash-callback'),
 
     #nagad
     # path('nagad/start-payment/<int:pk>/', nagad_views.start_nagad_payment, name='start-nagad-payment'),
