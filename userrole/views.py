@@ -14,6 +14,7 @@ from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework.exceptions import PermissionDenied
 from django.contrib.auth import authenticate
 from . import models
+from order.serializers import UserSerializer
 # Create your views here.
 class RegisterView(APIView):
     def post(self, request):
@@ -60,7 +61,7 @@ class CustomTokenObtainPairView(TokenObtainPairView):
 
 class UserDetailsView(APIView):
     def get(self, request, param):
-        if not request.user.is_staff:
+        if not request.user.is_staff  :
             return Response(
                 {"message": "Only admin users are allowed"},
                 status=status.HTTP_403_FORBIDDEN
@@ -72,6 +73,28 @@ class UserDetailsView(APIView):
             "phone": user.userinfo.phone
         })
     
+class ProfileViewUpdate(APIView):
+    serializers_class = UserSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    
+    def get(self, request):
+        serializer = self.serializers_class(request.user)
+        return Response(serializer.data)
+    
+    def put(self, request):
+        serializer = self.serializers_class(request.user, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    def patch(self, request):
+        serializer = self.serializers_class(request.user, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 class AddressViews(viewsets.ModelViewSet):
     serializer_class = serializers.AddressSerializer
     permission_classes = [permissions.IsAuthenticated] 
