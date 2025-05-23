@@ -21,7 +21,7 @@ urlpatterns = [
 
     path('user/<int:param>', views.UserDetailsView.as_view()),
     path('user/', include(router.urls)),
-    path('profile/', views.ProfileViewUpdate.as_view(), name='profile'),
+    path('profile', views.ProfileViewUpdate.as_view(), name='profile'),
 
     path('superadmin/get_admin', views.admins),
     path('superadmin/add_admin', views.add_admin),
