@@ -78,13 +78,11 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-CORS_ALLOW_ALL_ORIGINS = True  
-CORS_ALLOWED_ORIGINS = [
-    "https://8puzzle-ai-solved.vercel.app",
-]
+CORS_ALLOW_ALL_ORIGINS = True
+
 CORS_ALLOW_HEADERS = ["*"]
-CORS_ALLOW_METHODS = ["GET", "POST", "OPTIONS"]
-ROOT_URLCONF = 'americatobd.urls'
+
+CORS_ALLOW_METHODS = ["DELETE", "GET", "OPTIONS", "PATCH", "POST", "PUT"]
 
 TEMPLATES = [
     {
@@ -240,3 +238,25 @@ SUPPORT_EMAIL = 'support@example.com'  # Your support email
 #ssl
 AAMARPAY_STORE_ID = "aamarpaytest"
 AAMARPAY_SIGNATURE_KEY= "dbb74894e82415a2f7ff0ec3a97e4183"
+
+# bKash Settings
+BKASH_BASE_URL = "https://tokenized.sandbox.bka.sh/v1.2.0-beta"  # Sandbox URL
+BKASH_APP_KEY = os.getenv('BKASH_APP_KEY', 'your-app-key')  # Get from environment variable
+BKASH_APP_SECRET = os.getenv('BKASH_APP_SECRET', 'your-app-secret')  # Get from environment variable
+BKASH_USERNAME = os.getenv('BKASH_USERNAME', 'your-username')  # Get from environment variable
+BKASH_PASSWORD = os.getenv('BKASH_PASSWORD', 'your-password')  # Get from environment variable
+
+# bKash Callback and Frontend URLs
+BKASH_CALLBACK_URL = os.getenv('BKASH_CALLBACK_URL', 'https://america-to-bd.vercel.app/api/bkash-callback/')
+BKASH_PAYMENT_MODE = "0011"  # For Checkout URL
+FRONTEND_SUCCESS_URL = os.getenv('FRONTEND_SUCCESS_URL', 'https://america-to-bd.vercel.app/payment/success')
+FRONTEND_FAILURE_URL = os.getenv('FRONTEND_FAILURE_URL', 'https://america-to-bd.vercel.app/payment/failure')
+
+# Cloudinary
+CLOUDINARY_CLOUD_NAME = os.getenv('CLOUDINARY_CLOUD_NAME')
+CLOUDINARY_API_KEY = os.getenv('CLOUDINARY_API_KEY')
+CLOUDINARY_API_SECRET = os.getenv('CLOUDINARY_API_SECRET')
+
+# Resend
+RESEND_API_KEY = os.getenv('RESEND_API_KEY')
+

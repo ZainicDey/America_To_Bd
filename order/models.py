@@ -3,6 +3,7 @@ from django.contrib.auth.models import User
 import secrets
 import string
 from userrole.models import Address
+from django.utils import timezone
 # from userrole.models import Address
 
 def generate_unique_tracker(length=12):
@@ -72,6 +73,7 @@ class ResolvedOrder(models.Model):
 
         if status == "PD":
             self.track_status.is_paid = True
+            self.track_status.paid_time = timezone.now()
             self.track_status.is_shipped = False
             self.track_status.is_received = False
         elif status == "CN":
@@ -79,11 +81,13 @@ class ResolvedOrder(models.Model):
         elif status == "SP":
             self.track_status.is_paid = True
             self.track_status.is_shipped = True
+            self.track_status.shipped_time = timezone.now()
             self.track_status.is_received = False
         elif status == "UR":
             self.track_status.is_paid = True
             self.track_status.is_shipped = True
             self.track_status.is_received = True
+            self.track_status.received_time = timezone.now()
 
         self.save()
         self.track_status.save()
@@ -91,9 +95,15 @@ class ResolvedOrder(models.Model):
 class TrackingOrder(models.Model):
     resolved_order = models.OneToOneField(ResolvedOrder, on_delete=models.CASCADE, related_name='track_status')
     user = models.ForeignKey(User, on_delete=models.CASCADE)
+
     is_paid = models.BooleanField(default=False)
+    paid_time = models.DateTimeField(blank=True, null=True)
+
     is_shipped = models.BooleanField(default=False)
+    shipped_time = models.DateTimeField(blank=True, null=True)
+
     is_received = models.BooleanField(default=False)
+    received_time = models.DateTimeField(blank=True, null=True)
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

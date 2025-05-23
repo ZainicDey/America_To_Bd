@@ -9,11 +9,15 @@
 
 # logger = logging.getLogger(__name__)
 
-# BKASH_BASE_URL = "https://tokenized.sandbox.bka.sh/v1.2.0-beta"
+# BKASH_BASE_URL = settings.BKASH_BASE_URL
 # APP_KEY = settings.BKASH_APP_KEY
 # APP_SECRET = settings.BKASH_APP_SECRET
 # USERNAME = settings.BKASH_USERNAME
 # PASSWORD = settings.BKASH_PASSWORD
+# BKASH_CALLBACK_URL = settings.BKASH_CALLBACK_URL
+# BKASH_PAYMENT_MODE = settings.BKASH_PAYMENT_MODE
+# FRONTEND_SUCCESS_URL = settings.FRONTEND_SUCCESS_URL
+# FRONTEND_FAILURE_URL = settings.FRONTEND_FAILURE_URL
 
 # def get_bkash_token():
 #     try:
@@ -45,9 +49,12 @@
 #         token = get_bkash_token()
 
 #         payload = {
+#             "mode": BKASH_PAYMENT_MODE,
+#             "payerReference": str(request.user.id if request.user.is_authenticated else "anonymous"),
+#             "callbackURL": BKASH_CALLBACK_URL,
 #             "amount": str(order.converted_price),
 #             "currency": "BDT",
-#             "intent": "sale",
+#             "intent": "authorization",
 #             "merchantInvoiceNumber": order.tracker
 #         }
 
@@ -69,7 +76,11 @@
 #         order.payment_url = res_data.get("bkashURL")
 #         order.save()
 
-#         return Response({"bkashURL": res_data.get("bkashURL")})
+#         return Response({
+#             "bkashURL": res_data.get("bkashURL"),
+#             "paymentID": res_data.get("paymentID"),
+#             "orderID": order.id
+#         })
 #     except ResolvedOrder.DoesNotExist:
 #         return Response({"error": "Order not found"}, status=status.HTTP_404_NOT_FOUND)
 #     except requests.exceptions.RequestException as e:
@@ -89,7 +100,7 @@
 #         order = ResolvedOrder.objects.get(payment_id=payment_id)
         
 #         if order.status == "PD":
-#             return redirect("your-frontend-success-page")
+#             return redirect(FRONTEND_SUCCESS_URL)
 
 #         token = get_bkash_token()
 
@@ -107,12 +118,12 @@
 
 #         if data.get("transactionStatus") == "Completed":
 #             order.update_order_status("PD")
-#             return redirect("your-frontend-success-page")
+#             return redirect(FRONTEND_SUCCESS_URL)
 #         elif data.get("transactionStatus") == "Failed":
-#             return redirect("your-frontend-failure-page")
+#             return redirect(FRONTEND_FAILURE_URL)
 #         else:
 #             logger.warning(f"Unexpected transaction status: {data.get('transactionStatus')}")
-#             return redirect("your-frontend-failure-page")
+#             return redirect(FRONTEND_FAILURE_URL)
             
 #     except ResolvedOrder.DoesNotExist:
 #         logger.error(f"Order not found for payment ID: {payment_id}")

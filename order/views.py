@@ -6,6 +6,11 @@ from django_filters.rest_framework import DjangoFilterBackend
 from django.shortcuts import get_object_or_404
 from django.contrib.auth.models import User
 from rest_framework.exceptions import NotFound
+from resend import Emails
+from django.conf import settings
+import logging
+
+logger = logging.getLogger(__name__)
 
 # Create your views here.
 class IsOwnerOrAdmin(permissions.BasePermission):
@@ -107,7 +112,41 @@ class ResolveOrderViewset(viewsets.ModelViewSet):
 
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        serializer.save(user=user, address=address)
+        resolved_order = serializer.save(user=user, address=address)
+
+        # Send confirmation email using Resend
+        try:
+            if not settings.RESEND_API_KEY:
+                logger.error("RESEND_API_KEY is not set in settings")
+                raise ValueError("RESEND_API_KEY is not configured")
+            
+            # Temporary debug code
+            print(f"API Key length: {len(settings.RESEND_API_KEY) if settings.RESEND_API_KEY else 0}")
+            print(f"API Key starts with: {settings.RESEND_API_KEY[:10] if settings.RESEND_API_KEY else 'None'}")
+
+            logger.info(f"Attempting to send email to {user.email}")
+            Emails.send({
+                "from": "America to BD <noreply@americatobd.com>",
+                "to": [user.email],
+                "subject": "Order Confirmation - America to BD",
+                "html": f"""
+                <h2>Your order has been confirmed!</h2>
+                <p>Dear {user.username},</p>
+                <p>Your order has been successfully created with the following details:</p>
+                <ul>
+                    <li>Tracking ID: {resolved_order.tracker}</li>
+                    <li>Product URL: {resolved_order.product_url}</li>
+                    <li>Quantity: {resolved_order.quantity}</li>
+                    <li>Total Cost: ${resolved_order.cost}</li>
+                </ul>
+                <p>You can track your order status using your tracking ID.</p>
+                <p>Thank you for choosing America to BD!</p>
+                """
+            })
+            logger.info(f"Successfully sent email to {user.email}")
+        except Exception as e:
+            logger.error(f"Failed to send confirmation email: {str(e)}", exc_info=True)
+            print(f"Failed to send confirmation email: {str(e)}")
 
         return Response(serializer.data)
 

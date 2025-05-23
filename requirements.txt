@@ -25,3 +25,6 @@ virtualenv
 whitenoise
 requests
 python-dotenv
+
+resend
+cloudinary

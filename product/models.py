@@ -9,6 +9,7 @@ class Category(models.Model):
         super().save(*args, **kwargs)
 
 class Product(models.Model):
+    image = models.URLField(null=True, blank=True)
     name = models.CharField(max_length=15)
     description = models.TextField()
     color = models.JSONField(default=list)
