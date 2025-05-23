@@ -84,6 +84,8 @@ CORS_ALLOW_HEADERS = ["*"]
 
 CORS_ALLOW_METHODS = ["DELETE", "GET", "OPTIONS", "PATCH", "POST", "PUT"]
 
+ROOT_URLCONF = 'americatobd.urls'
+
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
