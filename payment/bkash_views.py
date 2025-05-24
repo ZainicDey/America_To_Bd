@@ -113,21 +113,20 @@ def bkash_callback(request):
     try:
         payment_id = request.GET.get("paymentID")
         if not payment_id:
-            return Response({"error": "Payment ID is required"}, status=status.HTTP_400_BAD_REQUEST)
+            return redirect(FRONTEND_FAILURE_URL)  # changed
 
         print("Payment ID from callback:", payment_id)
 
-        # Get the order tied to this payment ID
         try:
             order = ResolvedOrder.objects.get(payment_id=payment_id)
         except ResolvedOrder.DoesNotExist:
             logger.error(f"Order not found for payment ID: {payment_id}")
-            return Response({"error": "Order not found"}, status=status.HTTP_404_NOT_FOUND)
+            return redirect(FRONTEND_FAILURE_URL)  # changed
 
         if order.status == "PD":
             return redirect(FRONTEND_SUCCESS_URL)
 
-        # Get auth token
+        # Get token
         token = get_bkash_token()
         headers = {
             "Authorization": token,
@@ -135,15 +134,19 @@ def bkash_callback(request):
             "Content-Type": "application/json"
         }
 
-        # Execute payment
         exec_url = f"{BKASH_BASE_URL}/tokenized/checkout/execute"
-        response = requests.post(exec_url, json={"paymentID": payment_id}, headers=headers)
-        response.raise_for_status()
-        data = response.json()
+        try:
+            response = requests.post(exec_url, json={"paymentID": payment_id}, headers=headers)
+            data = response.json()
+        except requests.exceptions.RequestException as e:
+            logger.error(f"Execute request failed: {str(e)}")
+            return redirect(FRONTEND_FAILURE_URL)
+        except ValueError:
+            logger.error(f"Invalid JSON in execute response")
+            return redirect(FRONTEND_FAILURE_URL)
 
         print("Execute API response:", data)
 
-        # --- Write response to file ---
         log_data = {
             "paymentID": data.get("paymentID", payment_id),
             "createTime": data.get("createTime", datetime.utcnow().isoformat()),
@@ -160,30 +163,18 @@ def bkash_callback(request):
         log_file = os.path.join(log_dir, f"bkash_callback_{payment_id}.json")
         with open(log_file, "w") as f:
             json.dump(log_data, f, indent=4)
-        # --- End write to file ---
 
         # Handle success
         if data.get("statusCode") == "0000" and data.get("transactionStatus") == "Completed":
             order.update_order_status("PD")
             return redirect(FRONTEND_SUCCESS_URL)
 
-        # Handle known failure codes
-        elif data.get("statusCode") == "2056":
-            logger.warning(f"Invalid payment state for ID {payment_id}")
+        # Handle known failure
+        if data.get("statusCode") == "2056" or data.get("transactionStatus") == "Failed":
             return redirect(FRONTEND_FAILURE_URL)
 
-        elif data.get("transactionStatus") == "Failed":
-            logger.warning(f"Payment failed for ID {payment_id}")
-            return redirect(FRONTEND_FAILURE_URL)
+        return redirect(FRONTEND_FAILURE_URL)
 
-        # Fallback for unknown or unexpected statuses
-        else:
-            logger.warning(f"Unexpected execute response: {data}")
-            return redirect(FRONTEND_FAILURE_URL)
-
-    except requests.exceptions.RequestException as e:
-        logger.error(f"Payment verification failed: {str(e)}")
-        return Response({"error": "Failed to verify payment"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
     except Exception as e:
         logger.error(f"Unexpected error in payment callback: {str(e)}")
-        return Response({"error": "An unexpected error occurred"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        return redirect(FRONTEND_FAILURE_URL)
