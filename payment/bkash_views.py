@@ -28,7 +28,8 @@ def get_bkash_token():
         headers = {
             "username": USERNAME,
             "password": PASSWORD,
-            "Content-Type": "application/json"
+            "Content-Type": "application/json",
+            "accept": "application/json"  # <- ADD THIS
         }
         data = {
             "app_key": APP_KEY,
@@ -58,8 +59,8 @@ def start_payment(request, pk):
             "mode": BKASH_PAYMENT_MODE,
             "payerReference": str(request.user.id if request.user.is_authenticated else "anonymous"),
             "callbackURL": BKASH_CALLBACK_URL,
-            "amount": str(1),
-            # "amount": str(order.converted_price),
+            # "amount": str(1),
+            "amount": str(order.converted_price),
             "currency": "BDT",
             "intent": "sale",
             "merchantInvoiceNumber": order.tracker
@@ -68,7 +69,8 @@ def start_payment(request, pk):
         headers = {
             "Authorization": token,
             "X-APP-Key": APP_KEY,
-            "Content-Type": "application/json"
+            "Content-Type": "application/json",
+            "accept": "application/json"  # <- ADD THIS
         }
 
         create_url = f"{BKASH_BASE_URL}/tokenized/checkout/create"
@@ -83,6 +85,14 @@ def start_payment(request, pk):
         order.payment_url = res_data.get("bkashURL")
         order.save()
 
+        print('')
+        print('')
+        print('')
+        print('')
+        print(res_data)
+        print('')
+        print('')
+        print('')
         return Response({
             "bkashURL": res_data.get("bkashURL"),
             "paymentID": res_data.get("paymentID"),
@@ -96,6 +106,7 @@ def start_payment(request, pk):
     except Exception as e:
         logger.error(f"Unexpected error in payment initiation: {str(e)}")
         return Response({"error": "An unexpected error occurred"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
 
 @api_view(['GET'])
 def bkash_callback(request):

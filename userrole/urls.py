@@ -15,9 +15,9 @@ router = SimpleRouter(trailing_slash='')
 router.register(r'address', views.AddressViews)
 
 urlpatterns = [
-    path('auth/signup/', views.RegisterView.as_view(), name='register'),
-    path('auth/signin/', CustomTokenObtainPairView.as_view(), name='get_token'),
-    path('auth/refresh/', TokenRefreshView.as_view(), name='refresh'),
+    path('auth/signup', views.RegisterView.as_view(), name='register'),
+    path('auth/signin', CustomTokenObtainPairView.as_view(), name='get_token'),
+    path('auth/refresh', TokenRefreshView.as_view(), name='refresh'),
 
     path('user/<int:param>', views.UserDetailsView.as_view()),
     path('user/', include(router.urls)),

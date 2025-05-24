@@ -16,7 +16,7 @@ router.register(r'mannual-payment', mannualpay_views.MannualPaymentView, basenam
 urlpatterns = [
     #bkash
     path('bkash/start-payment/<int:pk>', bkash_views.start_payment, name='start-payment'),
-    path('bkash/callback', bkash_views.bkash_callback, name='bkash-callback'),
+    path('bkash/callback/', bkash_views.bkash_callback, name='bkash-callback'),
     path('', include(router.urls)),
     #nagad
     # path('nagad/start-payment/<int:pk>/', nagad_views.start_nagad_payment, name='start-nagad-payment'),
