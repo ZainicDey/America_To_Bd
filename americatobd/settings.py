@@ -25,7 +25,12 @@ SECRET_KEY = 'django-insecure-b6c$^i7+)(6d8c8_qhy^8b+2io#9mx3)jo-@1i98t^f#dq1sja
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['127.0.0.1', '.vercel.app', 'https://america-to-bd.vercel.app/', 'https://america-to-bd-git-main-zainicdeys-projects.vercel.app/']
+ALLOWED_HOSTS = [
+    '127.0.0.1',
+    '.vercel.app',
+    'america-to-bd.vercel.app',
+    'america-to-bd-git-main-zainicdeys-projects.vercel.app',
+]
 
 # Application definition
 
@@ -252,10 +257,10 @@ BKASH_USERNAME = os.getenv('BKASH_USERNAME', 'your-username')  # Get from enviro
 BKASH_PASSWORD = os.getenv('BKASH_PASSWORD', 'your-password')  # Get from environment variable
 
 # bKash Callback and Frontend URLs
-BKASH_CALLBACK_URL = os.getenv('BKASH_CALLBACK_URL', 'https://america-to-bd.vercel.app/api/bkash-callback/')
+BKASH_CALLBACK_URL = os.getenv('BKASH_CALLBACK_URL')
 BKASH_PAYMENT_MODE = "0011"  # For Checkout URL
-FRONTEND_SUCCESS_URL = os.getenv('FRONTEND_SUCCESS_URL', 'https://america-to-bd.vercel.app/payment/success')
-FRONTEND_FAILURE_URL = os.getenv('FRONTEND_FAILURE_URL', 'https://america-to-bd.vercel.app/payment/failure')
+FRONTEND_SUCCESS_URL = os.getenv('FRONTEND_SUCCESS_URL')
+FRONTEND_FAILURE_URL = os.getenv('FRONTEND_FAILURE_URL')
 
 # Cloudinary
 CLOUDINARY_CLOUD_NAME = os.getenv('CLOUDINARY_CLOUD_NAME')
