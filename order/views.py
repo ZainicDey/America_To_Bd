@@ -152,15 +152,32 @@ class ResolveOrderViewset(viewsets.ModelViewSet):
 
     
     def partial_update(self, request, pk=None):
-        status = request.data['status']
         resolved_order = get_object_or_404(models.ResolvedOrder, id=pk)
         
-        resolved_order.update_order_status(status)
+        # Case 1: Only status update requested
+        if len(request.data) == 1 and 'status' in request.data:
+            try:
+                new_status = request.data['status']
+                resolved_order.update_order_status(new_status)
+                return Response({
+                    "message": f'Order {resolved_order.tracker} status updated to {new_status}'
+                })
+            except ValueError as e:
+                return Response(
+                    {"error": str(e)},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
 
-        return Response({
-            "message": f'Product of tracking-id {resolved_order.tracker} status successfully updated to {status}'
-        })
-
+        # Case 2: Other field updates
+        serializer = serializers.ResolvedOrderSerializer(
+            resolved_order,
+            data=request.data,
+            partial=True
+        )
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data)
+    
 class TrackingOrderViewset(views.APIView):  
     def get(self, request, tracker_id):
         try:

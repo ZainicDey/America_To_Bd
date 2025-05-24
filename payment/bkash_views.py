@@ -54,7 +54,12 @@ def start_payment(request, pk):
             return Response({"error": "Order is already paid"}, status=status.HTTP_400_BAD_REQUEST)
 
         token = get_bkash_token()
-
+        print('')
+        print('')
+        print('')
+        print('')
+        print('')
+        print(token)
         payload = {
             "mode": BKASH_PAYMENT_MODE,
             "payerReference": str(request.user.id if request.user.is_authenticated else "anonymous"),

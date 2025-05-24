@@ -66,6 +66,9 @@ class UserDetailsView(APIView):
                 {"message": "Only admin users are allowed"},
                 status=status.HTTP_403_FORBIDDEN
             )
+        if not param:
+            user = User.objects.all()
+            return Response(serializers.UserSerializer(user, many=True).data)
         user = get_object_or_404(User, id=param)
         return Response({
             "username": user.username,
