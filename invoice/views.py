@@ -22,7 +22,7 @@ def generate_invoice_pdf(request, tracker):
         template = get_template("invoice_template.html")
 
         # Use hosted image link instead of file path
-        logo_path = "https://res.cloudinary.com/dfac43kht/image/upload/americatobd_ydkjal.jpg"
+        logo_path = "https://res.cloudinary.com/dfac43kht/image/upload/v1748187173/logo-with-out-bg_n5akdk.png"
 
         # Format address fields
         address_text = "Address not available"
