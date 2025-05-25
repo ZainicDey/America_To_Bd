@@ -45,6 +45,7 @@ class ResolvedOrder(models.Model):
     box_fee = models.IntegerField(default=0, blank=True, null=True)
     address = models.ForeignKey(Address, related_name='resolved_order', on_delete=models.SET_NULL, null=True)
     discount = models.IntegerField(default=0, blank=True, null=True)
+    platform_fee = models.IntegerField(default=0, blank=True, null=True)
     cost = models.IntegerField()
     status = models.CharField(max_length=2, choices=STATUS_CHOICES, default='AC')
 

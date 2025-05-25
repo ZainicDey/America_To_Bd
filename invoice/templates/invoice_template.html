@@ -82,6 +82,11 @@
       padding: 8px;
       font-size: 16px;
       border: none;
+      text-align: right;
+    }
+
+    .cost-table td.cost-label {
+      text-align: left;
     }
 
     .cost-title-row {
@@ -130,28 +135,35 @@
   <div class="cost-section">
     <table class="cost-table">
       <tr class="cost-title-row">
-        <td>Price Breakdown</td>
+        <td colspan="2" style="text-align: left;">Price Breakdown</td>
       </tr>
       <tr>
-        <td>USD Price: ${{ order.usd_price }}</td>
+        <td class="cost-label">USD Price:</td>
+        <td>${{ order.usd_price }}</td>
       </tr>
       <tr>
-        <td>Converted Price (BDT): BDT {{ order.converted_price }}</td>
+        <td class="cost-label">Converted Price (BDT):</td>
+        <td>BDT {{ order.converted_price }}</td>
       </tr>
       <tr>
-        <td>Custom Fee: BDT {{ order.custom_fee }}</td>
+        <td class="cost-label">Custom Fee:</td>
+        <td>BDT {{ order.custom_fee }}</td>
       </tr>
       <tr>
-        <td>Tax: BDT {{ order.tax }}</td>
+        <td class="cost-label">Tax:</td>
+        <td>BDT {{ order.tax }}</td>
       </tr>
       <tr>
-        <td>Box Fee: BDT {{ order.box_fee|default:0 }}</td>
+        <td class="cost-label">Box Fee:</td>
+        <td>BDT {{ order.box_fee|default:0 }}</td>
       </tr>
       <tr>
-        <td>Discount: -BDT {{ order.discount|default:0 }}</td>
+        <td class="cost-label">Discount:</td>
+        <td>-BDT {{ order.discount|default:0 }}</td>
       </tr>
       <tr class="total-row">
-        <td>Total Cost: BDT {{ order.cost }}</td>
+        <td class="cost-label">Total Cost:</td>
+        <td>BDT {{ order.cost }}</td>
       </tr>
     </table>
   </div>
