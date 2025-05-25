@@ -1,7 +1,7 @@
 from rest_framework import viewsets, permissions, views, status, filters
 from rest_framework.response import Response
 from rest_framework.pagination import PageNumberPagination
-from . import models, serializers
+from . import models, serializers, CustomFilters
 from django_filters.rest_framework import DjangoFilterBackend
 from django.shortcuts import get_object_or_404
 from django.contrib.auth.models import User
@@ -47,6 +47,9 @@ class OrderRequestViewset(viewsets.ModelViewSet):
     def create(self, request):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
+        
+        # The serializer will handle the address_id -> address conversion automatically
+        # because of the PrimaryKeyRelatedField with source='address'
         serializer.save(user=request.user)
         return Response(serializer.data)
     
@@ -65,12 +68,12 @@ class OrderRequestViewset(viewsets.ModelViewSet):
 #     page_size_query_param = 'page_size'
 #     max_page_size = 100
 
+
 class ResolveOrderViewset(viewsets.ModelViewSet):
     serializer_class = serializers.ResolvedOrderSerializer
     queryset = models.ResolvedOrder.objects.all()
-    # pagination_class = ResolvedOrderPagination
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
-    filterset_fields = ['status', 'user__email']
+    filterset_class = CustomFilters.ResolvedOrderFilter
     search_fields = ['tracker', 'user__email', 'user__username', 'user__userinfo__phone']
     ordering_fields = ['created_at', 'updated_at']
 
@@ -89,10 +92,11 @@ class ResolveOrderViewset(viewsets.ModelViewSet):
         
 
     def create(self, request):
+        from userrole.models import Address
+        
         order_id = request.data.pop('order_id', None)
         email = request.data.pop('email', None)
         address = None
-        print(order_id)
 
         if email:
             try:
@@ -104,6 +108,7 @@ class ResolveOrderViewset(viewsets.ModelViewSet):
                 order = models.OrderRequest.objects.get(id=order_id)
                 user = order.user
                 address = order.address
+
                 order.delete()
             except models.OrderRequest.DoesNotExist:
                 raise NotFound("OrderRequest with this ID does not exist.")

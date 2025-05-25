@@ -16,10 +16,10 @@ class AddressSerializer(serializers.ModelSerializer):
 
 class OrderRequestSerializer(serializers.ModelSerializer):
     user = UserSerializer(read_only=True)
-    address = AddressSerializer(read_only=True)
-    address_id = serializers.PrimaryKeyRelatedField(
-        queryset=Address.objects.all(), write_only=True, source='address', required=False, allow_null=True
+    address = serializers.PrimaryKeyRelatedField(
+        queryset=Address.objects.all(), write_only=True, required=False, allow_null=True
     )
+    address_details = AddressSerializer(source='address', read_only=True)
 
     class Meta:
         model = models.OrderRequest

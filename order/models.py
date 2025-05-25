@@ -44,6 +44,7 @@ class ResolvedOrder(models.Model):
     tax = models.DecimalField(decimal_places=2, max_digits=10) 
     box_fee = models.IntegerField(default=0, blank=True, null=True)
     address = models.ForeignKey(Address, related_name='resolved_order', on_delete=models.SET_NULL, null=True)
+    discount = models.IntegerField(default=0, blank=True, null=True)
     cost = models.IntegerField()
     status = models.CharField(max_length=2, choices=STATUS_CHOICES, default='AC')
 

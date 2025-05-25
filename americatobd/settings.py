@@ -9,6 +9,11 @@ https://docs.djangoproject.com/en/5.0/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.0/ref/settings/
 """
+from dotenv import load_dotenv  # Optional, for .env support
+load_dotenv()  
+import os
+
+ENVIRONMENT = os.getenv('DJANGO_ENV', 'local')
 
 from pathlib import Path
 
@@ -23,7 +28,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-b6c$^i7+)(6d8c8_qhy^8b+2io#9mx3)jo-@1i98t^f#dq1sja'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.getenv('DEBUG', 'True') == 'True'
 
 ALLOWED_HOSTS = [
     '127.0.0.1',
@@ -31,6 +36,7 @@ ALLOWED_HOSTS = [
     'america-to-bd.vercel.app',
     'america-to-bd-git-main-zainicdeys-projects.vercel.app',
 ]
+# ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '127.0.0.1, localhostq').split(',')
 
 # Application definition
 
@@ -46,6 +52,7 @@ INSTALLED_APPS = [
     'order',
     'payment',
     'product',
+    'invoice',
     
     'rest_framework',
     'rest_framework_simplejwt',
@@ -53,7 +60,6 @@ INSTALLED_APPS = [
     'corsheaders',
     'django_filters',
 ]
-import os
 STATIC_URL = 'static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
@@ -116,9 +122,6 @@ WSGI_APPLICATION = 'americatobd.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
-from dotenv import load_dotenv  # Optional, for .env support
-load_dotenv()  
-ENVIRONMENT = os.getenv('DJANGO_ENV', 'local')
 
 if ENVIRONMENT == 'production':
     DATABASES = {

@@ -16,11 +16,12 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-
+from invoice.views import generate_invoice_pdf
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('userrole.urls')),
     path('order/', include('order.urls')),
     path('payment/', include('payment.urls')),
     path('product/', include('product.urls')),
+    path('invoice/<str:tracker>', generate_invoice_pdf, name='generate_invoice_pdf'),
 ]
