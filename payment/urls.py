@@ -13,15 +13,16 @@ router.register(r'mannual-payment', mannualpay_views.MannualPaymentView, basenam
 #     path('cancel/', views.payment_cancel, name='payment_cancel'),
 #     path('ipn/', views.payment_ipn, name='payment_ipn'),
 # ]   
+
 urlpatterns = [
     #bkash
     path('bkash/start-payment/<int:pk>', bkash_views.start_payment, name='start-payment'),
     path('bkash/callback', bkash_views.bkash_callback, name='bkash-callback'),
     path('', include(router.urls)),
-    path('approve-payment/<str:tracker_id>', mannualpay_views.ApprovePaymentView.as_view(), name='approve-payment'),
     #nagad
     # path('nagad/start-payment/<int:pk>/', nagad_views.start_nagad_payment, name='start-nagad-payment'),
     # path('nagad/callback/', nagad_views.nagad_callback, name='nagad-callback'),
 
     #mannual payment    
+    path('approve-payment', mannualpay_views.ApprovePaymentView.as_view(), name='approve-payment'),
 ]

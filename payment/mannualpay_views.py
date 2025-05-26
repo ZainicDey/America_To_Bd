@@ -120,10 +120,11 @@ class MannualPaymentView(ModelViewSet):
     #     return Response(serializer.data)
 
 class ApprovePaymentView(views.APIView):
-    def post(self, request, tracker_id):
+    def post(self, request):
         if not request.user.is_staff:
             return Response({"message": "You are not authorized to approve payments"}, status=status.HTTP_403_FORBIDDEN)
         
+        tracker_id = request.data.get('tracker_id')
         resolved_order = ResolvedOrder.objects.get(tracker=tracker_id)
         email = resolved_order.user.email
 
