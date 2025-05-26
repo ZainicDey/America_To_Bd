@@ -28,7 +28,7 @@ class OrderRequestViewset(viewsets.ModelViewSet):
     queryset = models.OrderRequest.objects.all()
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
     filterset_fields = ['user__email']
-    search_fields = ['user__username', 'user__email']
+    search_fields = ['user__first_name', 'user__last_name', 'user__email']
     ordering_fields = ['created_at', 'updated_at']
 
     def get_permissions(self):
@@ -74,7 +74,7 @@ class ResolveOrderViewset(viewsets.ModelViewSet):
     queryset = models.ResolvedOrder.objects.all()
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
     filterset_class = CustomFilters.ResolvedOrderFilter
-    search_fields = ['tracker', 'user__email', 'user__username', 'user__userinfo__phone']
+    search_fields = ['tracker', 'user__email', 'user__first_name', 'user__last_name', 'user__userinfo__phone']
     ordering_fields = ['created_at', 'updated_at']
 
     def get_permissions(self):

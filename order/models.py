@@ -16,7 +16,7 @@ def generate_unique_tracker(length=12):
 # Create your models here.
 class OrderRequest(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    product_url = models.URLField()
+    product_url = models.URLField(max_length=1000)
     quantity = models.IntegerField()
     is_box = models.BooleanField(default=False)
     description = models.TextField(max_length=300)
@@ -34,7 +34,7 @@ class ResolvedOrder(models.Model):
         ('UR', 'User Received')
     ]
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    product_url = models.URLField()
+    product_url = models.URLField(max_length=1000)
     tracker = models.CharField(blank=True, editable=False, unique=True, max_length=20)
     quantity = models.IntegerField()
     description = models.TextField(blank=True, null=True)
