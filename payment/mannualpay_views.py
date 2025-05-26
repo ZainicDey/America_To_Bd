@@ -88,8 +88,10 @@ class MannualPaymentView(ModelViewSet):
                     resource_type="image"
                 )
                 image_url = upload_result.get('secure_url')
+                public_id = upload_result.get('public_id')
                 data = request.data.copy()
                 data['image'] = image_url
+                data['public_id'] = public_id
                 serializer = self.get_serializer(data=data)
             else:
                 serializer = self.get_serializer(data=request.data)
@@ -132,6 +134,8 @@ class ApprovePaymentView(views.APIView):
         
         mannual_payment = MannualPayment.objects.get(tracker=tracker_id)
         mannual_payment.delete()
+
+        
 
         Emails.send({
                 "from": "America to BD <noreply@americatobd.com>",

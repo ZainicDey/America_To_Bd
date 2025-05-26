@@ -7,5 +7,6 @@ class MannualPaymentSerializer(serializers.ModelSerializer):
         fields = '__all__'
         extra_kwargs = {
             'user': {'read_only': True},
-            'image': {'required': False}  # Make image optional
+            'image': {'required': False},
+            'public_id': {'required': False}
         }
