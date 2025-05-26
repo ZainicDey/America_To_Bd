@@ -144,7 +144,7 @@ class ApprovePaymentView(views.APIView):
                 "html": f"""
                 <h2>We have aproved your payment!</h2>
                 <p>Dear {resolved_order.user.first_name} {resolved_order.user.last_name},</p>
-                <p>Thanks for using our service. We have approved your payment. Your order is being processed.</p>]
+                <p>Thanks for using our service. We have approved your payment. Your order is being processed.</p>
                 <p>You can track your order status using your tracking ID.</p>
                 <p>Tracking ID: {tracker_id}<p>
                 <p>Thank you for choosing America to BD!</p>
