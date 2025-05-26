@@ -1,4 +1,5 @@
 from rest_framework.viewsets import ModelViewSet
+from rest_framework import views
 from .models import MannualPayment
 from .serializers import MannualPaymentSerializer
 from rest_framework.permissions import IsAuthenticated
@@ -9,6 +10,8 @@ import cloudinary
 import cloudinary.uploader
 from django.conf import settings
 import logging
+from resend import Emails
+
 
 logger = logging.getLogger(__name__)
 
@@ -115,3 +118,32 @@ class MannualPaymentView(ModelViewSet):
 
     #     serializer = self.get_serializer(queryset, many=True)
     #     return Response(serializer.data)
+
+class ApprovePaymentView(views.APIView):
+    def post(self, request, tracker_id):
+        if not request.user.is_staff:
+            return Response({"message": "You are not authorized to approve payments"}, status=status.HTTP_403_FORBIDDEN)
+        
+        resolved_order = ResolvedOrder.objects.get(tracker=tracker_id)
+        email = resolved_order.user.email
+
+        resolved_order.update_order_status('PD')
+        
+        mannual_payment = MannualPayment.objects.get(tracker=tracker_id)
+        mannual_payment.delete()
+
+        Emails.send({
+                "from": "America to BD <noreply@americatobd.com>",
+                "to": [email],
+                "subject": "Payment Confirmation - America to BD",
+                "html": f"""
+                <h2>We have aproved your payment!</h2>
+                <p>Dear {resolved_order.user.first_name} {resolved_order.user.last_name},</p>
+                <p>Thanks for using our service. We have approved your payment. Your order is being processed.</p>]
+                <p>You can track your order status using your tracking ID.</p>
+                <p>Tracking ID: {tracker_id}<p>
+                <p>Thank you for choosing America to BD!</p>
+                """
+            })
+
+        return Response({"message": "Payment approved successfully"}, status=status.HTTP_200_OK)

@@ -18,6 +18,7 @@ urlpatterns = [
     path('bkash/start-payment/<int:pk>', bkash_views.start_payment, name='start-payment'),
     path('bkash/callback', bkash_views.bkash_callback, name='bkash-callback'),
     path('', include(router.urls)),
+    path('approve-payment/<str:tracker_id>', mannualpay_views.ApprovePaymentView.as_view(), name='approve-payment'),
     #nagad
     # path('nagad/start-payment/<int:pk>/', nagad_views.start_nagad_payment, name='start-nagad-payment'),
     # path('nagad/callback/', nagad_views.nagad_callback, name='nagad-callback'),
