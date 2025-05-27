@@ -25,6 +25,9 @@ class OrderRequest(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
+    class Meta:
+        ordering = ['-created_at']
+
 class ResolvedOrder(models.Model):
     STATUS_CHOICES = [
         ('AC', 'Accepted'),
@@ -93,6 +96,9 @@ class ResolvedOrder(models.Model):
 
         self.save()
         self.track_status.save()
+
+    class Meta:
+        ordering = ['-created_at']
 
 class TrackingOrder(models.Model):
     resolved_order = models.OneToOneField(ResolvedOrder, on_delete=models.CASCADE, related_name='track_status')

@@ -7,6 +7,13 @@ import cloudinary.uploader
 from django.conf import settings
 import logging
 
+from rest_framework.views import APIView
+from rest_framework.permissions import IsAuthenticated
+from rest_framework import status
+from .models import Order
+from .serializers import OrderSerializer
+from .filters import ProductFilter
+
 logger = logging.getLogger(__name__)
 
 # Configure Cloudinary
@@ -36,7 +43,7 @@ class ProductView(viewsets.ModelViewSet):
     queryset = models.Product.objects.all()
     serializer_class = serializers.ProductSerializers
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
-    filterset_fields = ['category']
+    filterset_class = ProductFilter  # Use the custom filter class here
     search_fields = ['name', 'description']
     ordering_fields = ['created_at', 'updated_at', 'price']
 
@@ -115,3 +122,60 @@ class CategoryView(viewsets.ModelViewSet):
     queryset = models.Category.objects.all()
     serializer_class = serializers.CategorySerializer
     permission_classes = [permissions.IsAdminUser]
+
+class OrderView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        if self.request.user.is_staff:
+            return Order.objects.all()
+        return Order.objects.filter(user=self.request.user)
+        
+    def get(self, request, tracker=None):
+        if tracker:
+            try:
+                order = Order.objects.get(tracker=tracker)
+            except Order.DoesNotExist:
+                return Response({'detail': 'Order not found.'}, status=404)
+            serializer = OrderSerializer(order)
+            return Response(serializer.data)
+            
+        queryset = self.get_queryset()
+        serializer = OrderSerializer(queryset, many=True)
+        return Response(serializer.data, status=200)
+        
+    def post(self, request):
+        serializer = OrderSerializer(data=request.data)
+        if serializer.is_valid():
+            order = serializer.save(user = request.user)
+            return Response(OrderSerializer(order).data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, pk):
+        if not request.user.is_staff:
+            return Response({'detail': 'Not authorized.'}, status=status.HTTP_403_FORBIDDEN)
+
+        try:
+            order = Order.objects.get(pk=pk)
+        except Order.DoesNotExist:
+            return Response({'detail': 'Order not found.'}, status=status.HTTP_404_NOT_FOUND)
+
+        order.delete()
+        return Response({'detail': 'Order deleted successfully.'}, status=status.HTTP_204_NO_CONTENT)
+    
+    def patch(self, request, pk):
+        if not request.user.is_staff:
+            return Response({'detail': 'Not authorized.'}, status=status.HTTP_403_FORBIDDEN)
+
+        try:
+            order = Order.objects.get(pk=pk)
+        except Order.DoesNotExist:
+            return Response({'detail': 'Order not found.'}, status=status.HTTP_404_NOT_FOUND)
+
+        status_value = request.data.get('status')
+        if status_value:
+            order.status = status_value
+            order.save()
+            return Response({'detail': 'Order status updated successfully.'}, status=status.HTTP_200_OK)
+
+        return Response({'detail': 'Invalid request.'}, status=status.HTTP_400_BAD_REQUEST)

@@ -9,4 +9,6 @@ router.register(r'order', views.ProductView, basename='product')
 
 urlpatterns = [
     path('', include(router.urls)),
+    path('place-order', views.OrderView.as_view(), name='order'),
+    path('place-order/<uuid:tracker>', views.OrderView.as_view(), name='order-detail'),
 ]

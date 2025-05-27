@@ -135,18 +135,18 @@ class ApprovePaymentView(views.APIView):
         mannual_payment = MannualPayment.objects.get(tracker=tracker_id)
         mannual_payment.delete()
 
-        Emails.send({
-                "from": "America to BD <noreply@americatobd.com>",
-                "to": [email],
-                "subject": "Payment Confirmation - America to BD",
-                "html": f"""
-                <h2>We have aproved your payment!</h2>
-                <p>Dear {resolved_order.user.first_name} {resolved_order.user.last_name},</p>
-                <p>Thanks for using our service. We have approved your payment. Your order is being processed.</p>
-                <p>You can track your order status using your tracking ID.</p>
-                <p>Tracking ID: {tracker_id}<p>
-                <p>Thank you for choosing America to BD!</p>
-                """
-            })
+        # Emails.send({
+        #         "from": "America to BD <noreply@americatobd.com>",
+        #         "to": [email],
+        #         "subject": "Payment Confirmation - America to BD",
+        #         "html": f"""
+        #         <h2>We have aproved your payment!</h2>
+        #         <p>Dear {resolved_order.user.first_name} {resolved_order.user.last_name},</p>
+        #         <p>Thanks for using our service. We have approved your payment. Your order is being processed.</p>
+        #         <p>You can track your order status using your tracking ID.</p>
+        #         <p>Tracking ID: {tracker_id}<p>
+        #         <p>Thank you for choosing America to BD!</p>
+        #         """
+        #     })
 
         return Response({"message": "Payment approved successfully"}, status=status.HTTP_200_OK)

@@ -139,7 +139,7 @@ elif ENVIRONMENT == 'local':
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql',
-            'NAME': 'postgres',
+            'NAME': 'hello',
             'USER': 'postgres',
             'PASSWORD': '123',
             'HOST': 'localhost',
