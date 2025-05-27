@@ -1,10 +1,10 @@
-import django_filters
-from django_filters.filters import BaseInFilter
+from django_filters import rest_framework as filters
 from .models import ResolvedOrder
-class CharInFilter(BaseInFilter, django_filters.CharFilter):
+
+class CharInFilter(filters.BaseInFilter, filters.CharFilter):
     pass
 
-class ResolvedOrderFilter(django_filters.FilterSet):
+class ResolvedOrderFilter(filters.FilterSet):
     status_not = CharInFilter(field_name='status', exclude=True)
 
     class Meta:
