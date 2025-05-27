@@ -135,8 +135,6 @@ class ApprovePaymentView(views.APIView):
         mannual_payment = MannualPayment.objects.get(tracker=tracker_id)
         mannual_payment.delete()
 
-        
-
         Emails.send({
                 "from": "America to BD <noreply@americatobd.com>",
                 "to": [email],
