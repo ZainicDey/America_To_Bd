@@ -17,7 +17,7 @@ class AddressSerializer(serializers.ModelSerializer):
 class OrderRequestSerializer(serializers.ModelSerializer):
     user = UserSerializer(read_only=True)
     address = serializers.PrimaryKeyRelatedField(
-        queryset=Address.objects.all(), write_only=True, required=False, allow_null=True
+        queryset=Address.objects.all(), write_only=True, required=True
     )
     address_details = AddressSerializer(source='address', read_only=True)
 
