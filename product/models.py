@@ -12,6 +12,7 @@ class Category(models.Model):
 
 class Product(models.Model):
     image = models.URLField(null=True, blank=True)
+    public_id = models.CharField(max_length=200, null=True, blank=True)
     name = models.CharField(max_length=100)
     description = models.TextField()
     color = models.JSONField(default=list, null=True, blank=True)

@@ -24,4 +24,5 @@ urlpatterns = [
     path('payment/', include('payment.urls')),
     path('product/', include('product.urls')),
     path('invoice/<str:tracker>', generate_invoice_pdf, name='generate_invoice_pdf'),
+    path('blog/', include('blog.urls')),
 ]

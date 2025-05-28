@@ -53,6 +53,7 @@ INSTALLED_APPS = [
     'payment',
     'product',
     'invoice',
+    'blog',
     
     'rest_framework',
     'rest_framework_simplejwt',
