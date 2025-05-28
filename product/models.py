@@ -12,10 +12,10 @@ class Category(models.Model):
 
 class Product(models.Model):
     image = models.URLField(null=True, blank=True)
-    name = models.CharField(max_length=15)
+    name = models.CharField(max_length=100)
     description = models.TextField()
-    color = models.JSONField(default=list)
-    size = models.JSONField(default=list)
+    color = models.JSONField(default=list, null=True, blank=True)
+    size = models.JSONField(default=list, null=True, blank=True)
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, related_name='product')
     price = models.DecimalField(max_digits=10, decimal_places=2)
 

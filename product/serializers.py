@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from . import models
-from .models import Order, OrderItem
+from .models import Order, OrderItem, Product
 
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
@@ -28,6 +28,7 @@ class ProductSerializers(serializers.ModelSerializer):
 
 
 class OrderItemSerializer(serializers.ModelSerializer):
+    product = ProductSerializers(read_only=True)
     class Meta:
         model = OrderItem
         fields = ['product', 'quantity', 'color', 'size', 'price']
