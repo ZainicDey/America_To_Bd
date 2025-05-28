@@ -33,7 +33,6 @@ class Order(models.Model):
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='order')
     address = models.CharField(max_length=500)
     tracker = models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True)
-    product = models.ForeignKey(Product, on_delete=models.SET_NULL, null=True, related_name='order')
     totalPrice = models.IntegerField()
     status = models.CharField(max_length=11, choices=STATUS_CHOICES, default='Pending') # Changed default to 'Pending'
     contactNo = models.CharField(max_length=11, validators=[
