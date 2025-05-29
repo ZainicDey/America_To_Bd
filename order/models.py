@@ -4,6 +4,7 @@ import secrets
 import string
 from userrole.models import Address
 from django.utils import timezone
+from resend import Emails
 # from userrole.models import Address
 
 def generate_unique_tracker(length=12):
@@ -81,13 +82,51 @@ class ResolvedOrder(models.Model):
             self.track_status.paid_time = timezone.now()
             self.track_status.is_shipped = False
             self.track_status.is_received = False
+    
+            Emails.send({
+                "from": "America to BD <noreply@americatobd.com>",
+                "to": [self.user.email],
+                "subject": "Payment Confirmation - America to BD",
+                "html": f"""
+                <h2>Your payment is confirmed!</h2>
+                <p>Dear {self.user.first_name} {self.user.last_name},</p>
+                <p>Your order is being processed now. To download your invoice please check your dashboard.</p>
+                <p>You can track your order status using your tracking ID.</p>
+                <p><strong>Tracking ID:</strong> {self.tracker}</p>
+                <p>Thank you for choosing America to BD!</p>
+                """
+            })
+
         elif status == "CN":
-            pass
+            Emails.send({
+                "from": "America to BD <noreply@americatobd.com>",
+                "to": [self.user.email],
+                "subject": "Payment Confirmation - America to BD",
+                "html": f"""
+                <h2>Your payment is cancelled</h2>
+                <p>Dear {self.user.first_name} {self.user.last_name},</p>
+                <p>Your order is cancelled. Please contact our support team for more details.</p>
+                """
+            })
         elif status == "SP":
             self.track_status.is_paid = True
             self.track_status.is_shipped = True
             self.track_status.shipped_time = timezone.now()
             self.track_status.is_received = False
+
+            Emails.send({
+                "from": "America to BD <noreply@americatobd.com>",
+                "to": [self.user.email],
+                "subject": "Payment Confirmation - America to BD",
+                "html": f"""
+                <h2>Your order {self.tracker} is shipped. Will be delivered soon.</h2>
+                <p>Dear {self.user.first_name} {self.user.last_name},</p>
+                <p>Your order is being shipped now. You can track your order status using your tracking ID.</p>
+                <p><strong>Tracking ID:</strong> {self.tracker}</p>
+                <p>Thank you for choosing America to BD!</p>
+                """
+            })
+            
         elif status == "UR":
             self.track_status.is_paid = True
             self.track_status.is_shipped = True

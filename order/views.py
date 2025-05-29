@@ -53,6 +53,24 @@ class OrderRequestViewset(viewsets.ModelViewSet):
         serializer.save(user=request.user)
         return Response(serializer.data)
     
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        self.perform_destroy(instance)
+
+        if instance.user == request.is_staff:
+            Emails.send({
+                "from": "America to BD <noreply@americatobd.com>",
+                "to": [instance.user.email],
+                "subject": "Order Request Deleted",
+                "html": f"""
+                <h2>Order Request Deleted</h2>
+                <p>Dear {instance.user.username},</p>
+                <p>Your order request has been deleted.</p>
+                <p>Please contact our support team for more details.</p>
+                """
+            })
+        return Response(status=status.HTTP_204_NO_CONTENT)
+    
 # class ResolvedOrderPagination(PageNumberPagination):
     """"
     {

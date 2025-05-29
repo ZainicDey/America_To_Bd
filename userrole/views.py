@@ -14,6 +14,8 @@ from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework.exceptions import PermissionDenied
 from django.contrib.auth import authenticate
 from . import models
+from django.db.models import Q
+from resend import Emails
 from order.serializers import UserSerializer
 # Create your views here.
 class RegisterView(APIView):
@@ -48,6 +50,17 @@ class RegisterView(APIView):
             user.save()
             print(user)
             models.UserModel.objects.create(user=user, phone=phone)
+
+            Emails.send({
+                "from": "America to BD <noreply@americatobd.com>",
+                "to": [email],
+                "subject": "Thanks for signing up to America to BD",
+                "html": f"""
+                <h2>Sign up Email: {email} | Phone: {phone}</h2>
+                <p>To login into our website, please use the following link: <a href="https://americatobd.com/auth/signin">Login</a></p>
+                """
+            })
+
             return Response({'message': 'registration successful'}, status=status.HTTP_201_CREATED)
         except Exception as e:
             return Response({
@@ -60,21 +73,36 @@ class CustomTokenObtainPairView(TokenObtainPairView):
     serializer_class = serializers.CustomTokenObtainPairSerializer
 
 class UserDetailsView(APIView):
-    def get(self, request, param):
-        if not request.user.is_staff  :
-            return Response(
-                {"message": "Only admin users are allowed"},
-                status=status.HTTP_403_FORBIDDEN
-            )
+    def get(self, request, param=None):
+        if not request.user.is_staff:
+            return Response({"message": "Only admin users are allowed"}, status=status.HTTP_403_FORBIDDEN)
+
         if not param:
-            user = User.objects.all()
-            return Response(serializers.UserSerializer(user, many=True).data)
+            users = User.objects.all()
+
+            # Filtering logic
+            username = request.query_params.get("username")
+            email = request.query_params.get("email")
+            phone = request.query_params.get("phone")
+
+            if username:
+                users = users.filter(
+                    Q(first_name__icontains=username) | Q(last_name__icontains=username)
+                )
+            if email:
+                users = users.filter(email__icontains=email)
+            if phone:
+                users = users.filter(userinfo__phone__icontains=phone)
+
+            return Response(UserSerializer(users, many=True).data)
+
         user = get_object_or_404(User, id=param)
         return Response({
             "username": user.username,
             "email": user.email,
             "phone": user.userinfo.phone
         })
+
     
 class ProfileViewUpdate(APIView):
     serializers_class = UserSerializer

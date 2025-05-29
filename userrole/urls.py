@@ -19,8 +19,9 @@ urlpatterns = [
     path('auth/signin', CustomTokenObtainPairView.as_view(), name='get_token'),
     path('auth/refresh', TokenRefreshView.as_view(), name='refresh'),
 
+    path('user', views.UserDetailsView.as_view()),
     path('user/<int:param>', views.UserDetailsView.as_view()),
-    path('user/', include(router.urls)),
+    path('', include(router.urls)),
     path('profile', views.ProfileViewUpdate.as_view(), name='profile'),
 
     path('superadmin/get_admin', views.admins),
