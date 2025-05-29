@@ -26,3 +26,8 @@ class MannualPayment(models.Model):
         if self.public_id:
             cloudinary.uploader.destroy(self.public_id, invalidate=True)
         super().delete(*args, **kwargs)
+
+
+class BkashToken(models.Model):
+    token = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)

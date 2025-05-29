@@ -254,7 +254,7 @@ AAMARPAY_STORE_ID = "aamarpaytest"
 AAMARPAY_SIGNATURE_KEY= "dbb74894e82415a2f7ff0ec3a97e4183"
 
 # bKash Settings
-BKASH_BASE_URL = "https://tokenized.sandbox.bka.sh/v1.2.0-beta"  # Sandbox URL
+BKASH_BASE_URL = "https://tokenized.pay.bka.sh/v1.2.0-beta"  # Sandbox URL
 BKASH_APP_KEY = os.getenv('BKASH_APP_KEY', 'your-app-key')  # Get from environment variable
 BKASH_APP_SECRET = os.getenv('BKASH_APP_SECRET', 'your-app-secret')  # Get from environment variable
 BKASH_USERNAME = os.getenv('BKASH_USERNAME', 'your-username')  # Get from environment variable
@@ -264,6 +264,7 @@ BKASH_PASSWORD = os.getenv('BKASH_PASSWORD', 'your-password')  # Get from enviro
 BKASH_CALLBACK_URL = os.getenv('BKASH_CALLBACK_URL')
 BKASH_PAYMENT_MODE = "0011"  # For Checkout URL
 FRONTEND_SUCCESS_URL = os.getenv('FRONTEND_SUCCESS_URL')
+FRONTEND_CANCEL_URL = os.getenv('FRONTEND_CANCEL_URL')
 FRONTEND_FAILURE_URL = os.getenv('FRONTEND_FAILURE_URL')
 
 # Cloudinary

@@ -7,7 +7,10 @@ from django.shortcuts import redirect
 from rest_framework import status
 import logging
 import json, os
-from datetime import datetime
+from datetime import datetime, timedelta
+from django.utils.timezone import now
+
+from payment.models import BkashToken
 
 logger = logging.getLogger(__name__)
 
@@ -19,17 +22,24 @@ PASSWORD = settings.BKASH_PASSWORD
 BKASH_CALLBACK_URL = settings.BKASH_CALLBACK_URL
 BKASH_PAYMENT_MODE = settings.BKASH_PAYMENT_MODE
 FRONTEND_SUCCESS_URL = settings.FRONTEND_SUCCESS_URL
+FRONTEND_CANCEL_URL = settings.FRONTEND_CANCEL_URL
 FRONTEND_FAILURE_URL = settings.FRONTEND_FAILURE_URL
 
 def get_bkash_token():
-    print('token hit')
+    token_obj = BkashToken.objects.last()
+    if token_obj and now() - token_obj.created_at < timedelta(minutes=55):
+        return token_obj.token
+    else:
+        if token_obj:
+            token_obj.delete()
+
     try:
         token_url = f"{BKASH_BASE_URL}/tokenized/checkout/token/grant"
         headers = {
             "username": USERNAME,
             "password": PASSWORD,
             "Content-Type": "application/json",
-            "accept": "application/json"  # <- ADD THIS
+            "accept": "application/json" 
         }
         data = {
             "app_key": APP_KEY,
@@ -39,21 +49,29 @@ def get_bkash_token():
         response = requests.post(token_url, json=data, headers=headers)
         print("Token response:", response.status_code, response.text)
         response.raise_for_status()
-        return response.json().get("id_token")
+        
+        token = response.json().get("id_token")
+        
+        # Save the token to the database
+        new_token_obj = BkashToken(token=token)
+        new_token_obj.save()
+
+        return token
     except requests.exceptions.RequestException as e:
         logger.error(f"Failed to get bKash token: {str(e)}")
         raise
 
 @api_view(["GET"])
 def start_payment(request, pk):
-    print('hit')
     try:
-        order = ResolvedOrder.objects.get(pk=pk)
+        order = ResolvedOrder.objects.last()
 
         if order.status == "PD":
             return Response({"error": "Order is already paid"}, status=status.HTTP_400_BAD_REQUEST)
 
+        print('hit')
         token = get_bkash_token()
+
         print('')
         print('')
         print('')
@@ -65,7 +83,7 @@ def start_payment(request, pk):
             "payerReference": str(request.user.id if request.user.is_authenticated else "anonymous"),
             "callbackURL": BKASH_CALLBACK_URL,
             # "amount": str(1),
-            "amount": str(order.converted_price),
+            "amount": str(order.cost),
             "currency": "BDT",
             "intent": "sale",
             "merchantInvoiceNumber": order.tracker
@@ -75,7 +93,7 @@ def start_payment(request, pk):
             "Authorization": token,
             "X-APP-Key": APP_KEY,
             "Content-Type": "application/json",
-            "accept": "application/json"  # <- ADD THIS
+            "accept": "application/json" 
         }
 
         create_url = f"{BKASH_BASE_URL}/tokenized/checkout/create"
@@ -117,16 +135,23 @@ def start_payment(request, pk):
 def bkash_callback(request):
     try:
         payment_id = request.GET.get("paymentID")
+        bkash_status = request.GET.get("status")
+
+        print(bkash_status)
+        print('')
+
+        if bkash_status != "success":
+            return redirect(FRONTEND_CANCEL_URL)
+
         if not payment_id:
-            return redirect(FRONTEND_FAILURE_URL)  # changed
+            return redirect(FRONTEND_FAILURE_URL) 
 
         print("Payment ID from callback:", payment_id)
-
         try:
             order = ResolvedOrder.objects.get(payment_id=payment_id)
         except ResolvedOrder.DoesNotExist:
             logger.error(f"Order not found for payment ID: {payment_id}")
-            return redirect(FRONTEND_FAILURE_URL)  # changed
+            return redirect(FRONTEND_FAILURE_URL)   
 
         if order.status == "PD":
             return redirect(FRONTEND_SUCCESS_URL)
@@ -158,9 +183,10 @@ def bkash_callback(request):
             "orgLogo": data.get("orgLogo", ""),
             "orgName": data.get("orgName", ""),
             "transactionStatus": data.get("transactionStatus", ""),
+            "trxId": data.get("trxID", ""),
             "amount": data.get("amount", ""),
             "currency": data.get("currency", ""),
-            "intent": data.get("intent", ""),
+            "intent": data.get("authroization", ""),
             "merchantInvoiceNumber": data.get("merchantInvoiceNumber", ""),
         }
         log_dir = os.path.join(os.path.dirname(__file__), "bkash_logs")
@@ -183,3 +209,4 @@ def bkash_callback(request):
     except Exception as e:
         logger.error(f"Unexpected error in payment callback: {str(e)}")
         return redirect(FRONTEND_FAILURE_URL)
+
