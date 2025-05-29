@@ -4,16 +4,16 @@ from django.core.validators import MinLengthValidator
 import uuid
 # Create your models here.
 class Category(models.Model):
-    name = models.CharField(max_length=15, unique=True)
+    name = models.CharField(max_length=100, unique=True)
 
     def save(self, *args, **kwargs):
         self.name = self.name.lower()
         super().save(*args, **kwargs)
 
 class Product(models.Model):
-    image = models.URLField(null=True, blank=True)
-    public_id = models.CharField(max_length=200, null=True, blank=True)
-    name = models.CharField(max_length=100)
+    image = models.JSONField(default=list, null=True, blank=True) 
+    public_id = models.JSONField(default=list, null=True, blank=True)
+    name = models.CharField(max_length=1000)
     description = models.TextField()
     color = models.JSONField(default=list, null=True, blank=True)
     size = models.JSONField(default=list, null=True, blank=True)

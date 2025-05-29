@@ -54,33 +54,32 @@ class ProductView(viewsets.ModelViewSet):
     
     def create(self, request, *args, **kwargs):
         try:
-            image_file = request.FILES.get('image')
+            image_files = request.FILES.getlist('image') 
+            image_urls = []
+            public_ids = []
 
-            print(image_file)
-            
-            if image_file:
-                # Validate image
+            for image_file in image_files:
                 is_valid, error_message = validate_image(image_file)
                 if not is_valid:
                     return Response({"error": error_message}, status=status.HTTP_400_BAD_REQUEST)
 
-                # Upload to Cloudinary
                 upload_result = cloudinary.uploader.upload(
                     image_file,
                     folder="products",
                     resource_type="image"
                 )
-                image_url = upload_result.get('secure_url')
-                print(image_url)
-                data = request.data.copy()
-                data['image'] = image_url
-                serializer = self.get_serializer(data=data)
-            else:
-                serializer = self.get_serializer(data=request.data)
+                image_urls.append(upload_result.get('secure_url'))
+                public_ids.append(upload_result.get('public_id'))
+
+            data = request.data.copy()
+            data.setlist('image', image_urls)
+            data.setlist('public_id', public_ids)
+            serializer = self.get_serializer(data=data)
 
             serializer.is_valid(raise_exception=True)
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
+
         except Exception as e:
             logger.error(f"Error creating product: {str(e)}")
             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

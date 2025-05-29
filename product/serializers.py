@@ -13,7 +13,9 @@ class ProductSerializers(serializers.ModelSerializer):
         slug_field='name',
         queryset=models.Category.objects.all()
     )
-    image = serializers.URLField(required=False, allow_null=True)
+    image = serializers.ListField(
+        child=serializers.URLField(), required=False, allow_null=True
+    )
     
     class Meta:
         model = models.Product
