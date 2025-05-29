@@ -26,8 +26,8 @@ class Product(models.Model):
 class Order(models.Model):
     STATUS_CHOICES = [
         ('Pending', 'User Sent'),
-        ('Cancel', 'Admin Canceled'), 
-        ('Accept', 'Payment Accepted'),
+        ('Canceled', 'Admin Canceled'), 
+        ('Accepted', 'Payment Accepted'),
         ('Received', 'User Received')
     ]
 

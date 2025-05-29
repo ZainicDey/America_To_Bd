@@ -13,7 +13,7 @@ from rest_framework import status
 from .models import Order
 from .serializers import OrderSerializer
 from .filters import ProductFilter
-
+from resend import Emails
 logger = logging.getLogger(__name__)
 
 # Configure Cloudinary
@@ -160,6 +160,16 @@ class OrderView(APIView):
             return Response({'detail': 'Order not found.'}, status=status.HTTP_404_NOT_FOUND)
 
         order.delete()
+        Emails.send({
+            "from": "America to BD <noreply@americatobd.com>",
+            "to": [self.user.email],
+            "subject": "Payment was invalid - America to BD",
+            "html": f"""
+            <h2>Your payment is cancelled</h2>
+            <p>Dear {self.user.first_name} {self.user.last_name},</p>
+            <p>We have checked your payment. Unfortunately, we couldn't. Please contact our support team for more details.</p>
+            """
+        })     
         return Response({'detail': 'Order deleted successfully.'}, status=status.HTTP_204_NO_CONTENT)
     
     def patch(self, request, tracker):
@@ -175,6 +185,16 @@ class OrderView(APIView):
         if status_value:
             order.status = status_value
             order.save()
+            Emails.send({
+            "from": "America to BD <noreply@americatobd.com>",
+            "to": [self.user.email],
+            "subject": "Order status for {tracker} - America to BD",
+            "html": f"""
+            <h2>Your payment is {status_value}</h2>
+            <p>Dear {self.user.first_name} {self.user.last_name},</p>
+            <p>We have checked your payment. Unfortunately, we couldn't. Please contact our support team for more details.</p>
+            """
+        })     
             return Response({'detail': 'Order status updated successfully.'}, status=status.HTTP_200_OK)
 
         return Response({'detail': 'Invalid request.'}, status=status.HTTP_400_BAD_REQUEST)

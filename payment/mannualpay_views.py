@@ -130,8 +130,7 @@ class ApprovePaymentView(views.APIView):
         resolved_order = ResolvedOrder.objects.get(tracker=tracker_id)
         email = resolved_order.user.email
 
-        resolved_order.status='PD'
-        resolved_order.save()
+        resolved_order.update_order_status='PD'
         
         mannual_payment = MannualPayment.objects.get(tracker=tracker_id)
         mannual_payment.delete()
