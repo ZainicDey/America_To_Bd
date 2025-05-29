@@ -57,7 +57,7 @@ class OrderRequestViewset(viewsets.ModelViewSet):
         instance = self.get_object()
         self.perform_destroy(instance)
 
-        if instance.user == request.is_staff:
+        if request.user.is_staff:
             Emails.send({
                 "from": "America to BD <noreply@americatobd.com>",
                 "to": [instance.user.email],

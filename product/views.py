@@ -38,7 +38,7 @@ def validate_image(image_file):
         return False, "Only JPEG, PNG and GIF images are allowed"
     
     return True, None
-
+import json
 class ProductView(viewsets.ModelViewSet):
     queryset = models.Product.objects.all()
     serializer_class = serializers.ProductSerializers
@@ -72,8 +72,9 @@ class ProductView(viewsets.ModelViewSet):
                 public_ids.append(upload_result.get('public_id'))
 
             data = request.data.copy()
-            data.setlist('image', image_urls)
-            data.setlist('public_id', public_ids)
+            data['image'] = json.dumps(image_urls)
+            data['public_id'] = json.dumps(public_ids)
+            print(data)
             serializer = self.get_serializer(data=data)
 
             serializer.is_valid(raise_exception=True)
@@ -94,7 +95,6 @@ class ProductView(viewsets.ModelViewSet):
                 is_valid, error_message = validate_image(image_file)
                 if not is_valid:
                     raise ValueError(error_message)
-
                 # Delete old image if exists
                 if instance.image:
                     try:
