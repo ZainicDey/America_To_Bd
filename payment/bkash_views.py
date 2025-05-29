@@ -62,9 +62,9 @@ def get_bkash_token():
         raise
 
 @api_view(["GET"])
-def start_payment(request, pk):
+def start_payment(request, tracker):
     try:
-        order = ResolvedOrder.objects.last()
+        order = ResolvedOrder.objects.get(tracker=tracker)
 
         if order.status == "PD":
             return Response({"error": "Order is already paid"}, status=status.HTTP_400_BAD_REQUEST)

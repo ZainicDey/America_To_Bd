@@ -150,24 +150,24 @@ class OrderView(APIView):
             return Response(OrderSerializer(order).data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    def delete(self, request, pk):
+    def delete(self, request, tracker):
         if not request.user.is_staff:
             return Response({'detail': 'Not authorized.'}, status=status.HTTP_403_FORBIDDEN)
 
         try:
-            order = Order.objects.get(pk=pk)
+            order = Order.objects.get(tracker=tracker)
         except Order.DoesNotExist:
             return Response({'detail': 'Order not found.'}, status=status.HTTP_404_NOT_FOUND)
 
         order.delete()
         return Response({'detail': 'Order deleted successfully.'}, status=status.HTTP_204_NO_CONTENT)
     
-    def patch(self, request, pk):
+    def patch(self, request, tracker):
         if not request.user.is_staff:
             return Response({'detail': 'Not authorized.'}, status=status.HTTP_403_FORBIDDEN)
 
         try:
-            order = Order.objects.get(pk=pk)
+            order = Order.objects.get(tracker=tracker)
         except Order.DoesNotExist:
             return Response({'detail': 'Order not found.'}, status=status.HTTP_404_NOT_FOUND)
 
