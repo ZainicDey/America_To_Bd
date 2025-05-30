@@ -113,16 +113,36 @@ class ProfileViewUpdate(APIView):
         return Response(serializer.data)
     
     def put(self, request):
+        phone = request.data.pop("phone", None)
+        
+        # Update user first
         serializer = self.serializers_class(request.user, data=request.data)
         if serializer.is_valid():
             serializer.save()
+
+            # Now handle phone update
+            if phone:
+                user_model = request.user.userinfo
+                user_model.phone = phone
+                user_model.save()
+
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    
+
     def patch(self, request):
+        phone = request.data.pop("phone", None)
+        
+        # Update user first
         serializer = self.serializers_class(request.user, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
+
+            # Now handle phone update
+            if phone:
+                user_model = request.user.userinfo
+                user_model.phone = phone
+                user_model.save()
+
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 

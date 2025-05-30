@@ -55,3 +55,10 @@ class AddressSerializer(serializers.ModelSerializer):
         extra_kwargs = {
             'user': {'write_only': True}
         }
+
+class UserSerializer(serializers.ModelSerializer):
+    phone = serializers.CharField(source='userinfo.phone')
+
+    class Meta:
+        model = User
+        fields = ['id', 'first_name', 'last_name', 'email', 'phone']
