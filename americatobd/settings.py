@@ -250,10 +250,6 @@ DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 SUPPORT_EMAIL = 'support@example.com'  # Your support email
 
 
-#ssl
-AAMARPAY_STORE_ID = "aamarpaytest"
-AAMARPAY_SIGNATURE_KEY= "dbb74894e82415a2f7ff0ec3a97e4183"
-
 # bKash Settings
 BKASH_BASE_URL = "https://tokenized.pay.bka.sh/v1.2.0-beta"  # Sandbox URL
 BKASH_APP_KEY = os.getenv('BKASH_APP_KEY', 'your-app-key')  # Get from environment variable
