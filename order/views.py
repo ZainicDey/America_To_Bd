@@ -127,7 +127,6 @@ class ResolveOrderViewset(viewsets.ModelViewSet):
                 user = order.user
                 address = order.address
 
-                order.delete()
             except models.OrderRequest.DoesNotExist:
                 raise NotFound("OrderRequest with this ID does not exist.")
         else:
@@ -136,6 +135,7 @@ class ResolveOrderViewset(viewsets.ModelViewSet):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         resolved_order = serializer.save(user=user, address=address)
+        order.delete()
 
         # Send confirmation email using Resend
         try:

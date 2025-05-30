@@ -131,6 +131,7 @@ class OrderView(APIView):
         return Order.objects.filter(user=self.request.user)
         
     def get(self, request, tracker=None):
+
         if tracker:
             try:
                 order = Order.objects.get(tracker=tracker)
@@ -162,14 +163,14 @@ class OrderView(APIView):
         order.delete()
         Emails.send({
             "from": "America to BD <noreply@americatobd.com>",
-            "to": [self.user.email],
+            "to": [order.user.email],
             "subject": "Payment was invalid - America to BD",
             "html": f"""
             <h2>Your payment is cancelled</h2>
-            <p>Dear {self.user.first_name} {self.user.last_name},</p>
-            <p>We have checked your payment. Unfortunately, we couldn't. Please contact our support team for more details.</p>
+            <p>Dear {order.user.first_name} {order.user.last_name},</p>
+            <p>We have checked your payment and unfortunately, it was invalid. Please contact our support team for more details.</p>
             """
-        })     
+        })
         return Response({'detail': 'Order deleted successfully.'}, status=status.HTTP_204_NO_CONTENT)
     
     def patch(self, request, tracker):
@@ -186,15 +187,15 @@ class OrderView(APIView):
             order.status = status_value
             order.save()
             Emails.send({
-            "from": "America to BD <noreply@americatobd.com>",
-            "to": [self.user.email],
-            "subject": "Order status for {tracker} - America to BD",
-            "html": f"""
-            <h2>Your payment is {status_value}</h2>
-            <p>Dear {self.user.first_name} {self.user.last_name},</p>
-            <p>We have checked your payment. Unfortunately, we couldn't. Please contact our support team for more details.</p>
-            """
-        })     
+                "from": "America to BD <noreply@americatobd.com>",
+                "to": [order.user.email],
+                "subject": f"Order status for {tracker} - America to BD",
+                "html": f"""
+                <h2>Your order status is now: {status_value}</h2>
+                <p>Dear {order.user.first_name} {order.user.last_name},</p>
+                <p>We've updated your order status. Please contact support if you have questions.</p>
+                """
+            })
             return Response({'detail': 'Order status updated successfully.'}, status=status.HTTP_200_OK)
 
         return Response({'detail': 'Invalid request.'}, status=status.HTTP_400_BAD_REQUEST)
