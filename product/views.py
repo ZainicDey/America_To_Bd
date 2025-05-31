@@ -16,6 +16,8 @@ from .filters import ProductFilter
 from resend import Emails
 logger = logging.getLogger(__name__)
 
+from .bkash_views import bkash_url
+
 # Configure Cloudinary
 cloudinary.config(
     cloud_name=settings.CLOUDINARY_CLOUD_NAME,
@@ -147,8 +149,17 @@ class OrderView(APIView):
     def post(self, request):
         serializer = OrderSerializer(data=request.data)
         if serializer.is_valid():
-            order = serializer.save(user = request.user)
-            return Response(OrderSerializer(order).data, status=status.HTTP_201_CREATED)
+            order = serializer.save(user=request.user)
+
+            if order.transactionId is None:
+                # Initiate bKash payment and get URL
+                payment_url = bkash_url(order.tracker)
+                if payment_url:
+                    return Response({"url": payment_url}, status=status.HTTP_201_CREATED)
+                return Response({"error": "Failed to initiate bKash payment"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            else:
+                return Response(OrderSerializer(order).data, status=status.HTTP_201_CREATED)
+            
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def delete(self, request, tracker):

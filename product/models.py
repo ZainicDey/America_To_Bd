@@ -45,6 +45,9 @@ class Order(models.Model):
     shippingMethod = models.CharField(max_length=20, null=True, blank=True)
     shippingCost = models.IntegerField()
 
+    payment_id = models.CharField(max_length=100, blank=True, null=True)
+    payment_url = models.CharField(blank=True, null=True)
+
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
