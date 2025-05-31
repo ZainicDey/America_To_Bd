@@ -53,6 +53,9 @@ class Order(models.Model):
 
     def __str__(self):
         return f"Order {self.tracker}"
+    
+    class Meta:
+        ordering = ['-created_at']
 
 class OrderItem(models.Model):
     order = models.ForeignKey(Order, related_name='items', on_delete=models.CASCADE, to_field='tracker')
