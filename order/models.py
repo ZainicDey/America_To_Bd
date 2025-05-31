@@ -34,7 +34,10 @@ class ResolvedOrder(models.Model):
         ('AC', 'Accepted'),
         ('CN', 'Canceled'),
         ('PD', 'Payment Done'),
-        ('SP', 'Shipped'),
+        ('SP', 'Shipped in USA'),
+        ('OB', 'On Board for BD'),
+        ('LB', 'Landed in BD'),
+        ('RD', 'Ready to Delivery'),
         ('UR', 'User Received')
     ]
     user = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -80,7 +83,11 @@ class ResolvedOrder(models.Model):
         if status == "PD":
             self.track_status.is_paid = True
             self.track_status.paid_time = timezone.now()
+            self.track_status.is_canceled = False
             self.track_status.is_shipped = False
+            self.track_status.is_on_board = False
+            self.track_status.is_landed_in_bd = False
+            self.track_status.is_ready_to_delivery = False
             self.track_status.is_received = False
     
             Emails.send({
@@ -98,10 +105,19 @@ class ResolvedOrder(models.Model):
             })
 
         elif status == "CN":
+            self.track_status.is_canceled = True
+            self.track_status.canceled_time = timezone.now()
+            self.track_status.is_paid = False
+            self.track_status.is_shipped = False
+            self.track_status.is_on_board = False
+            self.track_status.is_landed_in_bd = False
+            self.track_status.is_ready_to_delivery = False
+            self.track_status.is_received = False
+
             Emails.send({
                 "from": "America to BD <noreply@americatobd.com>",
                 "to": [self.user.email],
-                "subject": "Payment Confirmation - America to BD",
+                "subject": "Payment Cancelled - America to BD",
                 "html": f"""
                 <h2>Your payment is cancelled</h2>
                 <p>Dear {self.user.first_name} {self.user.last_name},</p>
@@ -111,27 +127,63 @@ class ResolvedOrder(models.Model):
         elif status == "SP":
             self.track_status.is_paid = True
             self.track_status.is_shipped = True
-            self.track_status.shipped_time = timezone.now()
+            self.track_status.shipped_in_usa_time = timezone.now()
+            self.track_status.is_canceled = False
+            self.track_status.is_on_board = False
+            self.track_status.is_landed_in_bd = False
+            self.track_status.is_ready_to_delivery = False
             self.track_status.is_received = False
 
             Emails.send({
                 "from": "America to BD <noreply@americatobd.com>",
                 "to": [self.user.email],
-                "subject": "Payment Confirmation - America to BD",
+                "subject": "Your order is shipped in USA - America to BD",
                 "html": f"""
                 <h2>Your order {self.tracker} is shipped. Will be delivered soon.</h2>
                 <p>Dear {self.user.first_name} {self.user.last_name},</p>
-                <p>Your order is being shipped now. You can track your order status using your tracking ID.</p>
+                <p>Your order is being prepared for shipment to Bangladesh.</p>
                 <p><strong>Tracking ID:</strong> {self.tracker}</p>
                 <p>Thank you for choosing America to BD!</p>
                 """
             })
+        elif status == "OB":
+            self.track_status.is_paid = True
+            self.track_status.is_shipped_in_usa = True
+            self.track_status.is_on_board = True
+            self.track_status.on_board_time = timezone.now()
+            self.track_status.is_canceled = False
+            self.track_status.is_landed_in_bd = False
+            self.track_status.is_ready_to_delivery = False
+            self.track_status.is_received = False
+
+        elif status == "LB":
+            self.track_status.is_paid = True
+            self.track_status.is_shipped_in_usa = True
+            self.track_status.is_on_board = True
+            self.track_status.is_landed_in_bd = True
+            self.track_status.landed_in_bd_time = timezone.now()
+            self.track_status.is_canceled = False
+            self.track_status.is_ready_to_delivery = False
+            self.track_status.is_received = False
+        elif status == "RD":
+            self.track_status.is_paid = True
+            self.track_status.is_shipped_in_usa = True
+            self.track_status.is_on_board = True
+            self.track_status.is_landed_in_bd = True
+            self.track_status.is_ready_to_delivery = True
+            self.track_status.ready_to_delivery_time = timezone.now()
+            self.track_status.is_received = False
+            self.track_status.is_canceled = False
             
         elif status == "UR":
             self.track_status.is_paid = True
-            self.track_status.is_shipped = True
+            self.track_status.is_shipped_in_usa = True
             self.track_status.is_received = True
             self.track_status.received_time = timezone.now()
+            self.track_status.is_canceled = False
+            self.track_status.is_ready_to_delivery = True
+            self.track_status.is_landed_in_bd = True
+            self.track_status.is_on_board = True
 
         self.save()
         self.track_status.save()
@@ -143,14 +195,26 @@ class TrackingOrder(models.Model):
     resolved_order = models.OneToOneField(ResolvedOrder, on_delete=models.CASCADE, related_name='track_status')
     user = models.ForeignKey(User, on_delete=models.CASCADE)
 
+    is_canceled = models.BooleanField(default=False)
+    canceled_time = models.DateTimeField(blank=True, null=True)
+
     is_paid = models.BooleanField(default=False)
     paid_time = models.DateTimeField(blank=True, null=True)
 
-    is_shipped = models.BooleanField(default=False)
-    shipped_time = models.DateTimeField(blank=True, null=True)
+    is_shipped_in_usa = models.BooleanField(default=False)
+    shipped_in_usa_time = models.DateTimeField(blank=True, null=True)
+
+    is_on_board = models.BooleanField(default=False)
+    on_board_time = models.DateTimeField(blank=True, null=True)
+
+    is_landed_in_bd = models.BooleanField(default=False)
+    landed_in_bd_time = models.DateTimeField(blank=True, null=True)   
+
+    is_ready_to_delivery = models.BooleanField(default=False)
+    ready_to_delivery_time = models.DateTimeField(blank=True, null=True)
 
     is_received = models.BooleanField(default=False)
     received_time = models.DateTimeField(blank=True, null=True)
-
+    
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
