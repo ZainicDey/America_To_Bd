@@ -162,7 +162,7 @@ class ResolveOrderViewset(viewsets.ModelViewSet):
                     <li>Quantity: {resolved_order.quantity}</li>
                     <li>Total Cost: ${resolved_order.cost}</li>
                 </ul>
-                <p>You can track your order status using your tracking ID.</p>
+                <p>You can now pay through website and track your order status using your tracking ID.</p>
                 <p>Thank you for choosing America to BD!</p>
                 """
             })
