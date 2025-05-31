@@ -12,5 +12,5 @@ urlpatterns = [
     path('', include(router.urls)),
     path('place-order', views.OrderView.as_view(), name='order'),
     path('place-order/<uuid:tracker>', views.OrderView.as_view(), name='order-detail'),
-    path('product/bkash/callback', bkash_views.bkash_callback, name='bkash-url'),
+    path('bkash/callback', bkash_views.bkash_callback, name='bkash-url'),
 ]
