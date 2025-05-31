@@ -17,6 +17,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from invoice.views import generate_invoice_pdf
+from resetpassword import views
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('userrole.urls')),
@@ -26,4 +27,15 @@ urlpatterns = [
     path('invoice/<str:tracker>', generate_invoice_pdf, name='generate_invoice_pdf'),
     path('blog/', include('blog.urls')),
     path('contact/', include('contact.urls')),
+
+    path(
+        "request-password-reset",
+        views.PasswordReset.as_view(),
+        name="request-password-reset",
+    ),
+    path(
+        "password-reset/<str:encoded_pk>/<str:token>/",
+        views.ResetPasswordAPI.as_view(),
+        name="reset-password",
+    ),
 ]

@@ -63,6 +63,9 @@ def get_bkash_token():
 
 @api_view(["GET"])
 def start_payment(request, tracker):
+    print(tracker)
+    order = ResolvedOrder.objects.get(tracker=tracker)
+    print(order)
     try:
         order = ResolvedOrder.objects.get(tracker=tracker)
 
@@ -129,7 +132,6 @@ def start_payment(request, tracker):
     except Exception as e:
         logger.error(f"Unexpected error in payment initiation: {str(e)}")
         return Response({"error": "An unexpected error occurred"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
 
 @api_view(['GET'])
 def bkash_callback(request):

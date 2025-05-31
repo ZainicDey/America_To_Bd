@@ -55,6 +55,7 @@ INSTALLED_APPS = [
     'invoice',
     'blog',
     'contact',
+    'resetpassword',
     
     'rest_framework',
     'rest_framework_simplejwt',
@@ -260,6 +261,7 @@ BKASH_PASSWORD = os.getenv('BKASH_PASSWORD', 'your-password')  # Get from enviro
 # bKash Callback and Frontend URLs
 BKASH_CALLBACK_URL = os.getenv('BKASH_CALLBACK_URL')
 BKASH_PAYMENT_MODE = "0011"  # For Checkout URL
+FRONTEND_URL = os.getenv('FRONTEND_URL')
 FRONTEND_SUCCESS_URL = os.getenv('FRONTEND_SUCCESS_URL')
 FRONTEND_CANCEL_URL = os.getenv('FRONTEND_CANCEL_URL')
 FRONTEND_FAILURE_URL = os.getenv('FRONTEND_FAILURE_URL')

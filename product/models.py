@@ -40,9 +40,9 @@ class Order(models.Model):
             MinLengthValidator(11),
         ])
     email = models.EmailField(max_length=254)
-    transactionId = models.CharField(max_length=50)
-    payMethod = models.CharField(max_length=11)
-    shippingMethod = models.CharField(max_length=20)
+    transactionId = models.CharField(max_length=50, null=True, blank=True)
+    payMethod = models.CharField(max_length=11, null=True, blank=True)
+    shippingMethod = models.CharField(max_length=20, null=True, blank=True)
     shippingCost = models.IntegerField()
 
     created_at = models.DateTimeField(auto_now_add=True)
