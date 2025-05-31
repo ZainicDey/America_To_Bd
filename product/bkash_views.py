@@ -82,13 +82,13 @@ def start_payment(tracker):
         print(token)
         payload = {
             "mode": BKASH_PAYMENT_MODE,
-            "payerReference": str(order.user.id),
+            "payerReference": str(order.user.email),
             "callbackURL": BKASH_CALLBACK_URL,
             # "amount": str(1),
             "amount": str(order.totalPrice),
             "currency": "BDT",
             "intent": "sale",
-            "merchantInvoiceNumber": order.tracker
+            "merchantInvoiceNumber": str(order.tracker)
         }
 
         headers = {
@@ -121,7 +121,7 @@ def start_payment(tracker):
         return Response({
             "bkashURL": res_data.get("bkashURL"),
             "paymentID": res_data.get("paymentID"),
-            "orderID": order.id
+            "orderID": order.tracker
         })
     except order.DoesNotExist:
         return Response({"error": "Order not found"}, status=status.HTTP_404_NOT_FOUND)
@@ -212,7 +212,22 @@ def bkash_callback(request):
         return redirect(FRONTEND_FAILURE_URL)
 
 def bkash_url(tracker):
+    print(tracker)
+    print('')
+    print('')
+    print('')
+    print('')
+    print('')
+    print('')
+    print('')
     response = start_payment(tracker)
+    print(response)
+    print('')
+    print('')
+    print('')
+    print('')
+    print('')
+    print('')
     if isinstance(response, Response) and response.status_code == 200:
         return response.data.get("bkashURL")
     return None
