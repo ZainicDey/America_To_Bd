@@ -56,6 +56,7 @@ INSTALLED_APPS = [
     'blog',
     'contact',
     'resetpassword',
+    'automation',
     
     'rest_framework',
     'rest_framework_simplejwt',

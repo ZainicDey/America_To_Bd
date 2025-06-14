@@ -22,7 +22,8 @@ class OrderRequest(models.Model):
     is_box = models.BooleanField(default=False)
     description = models.TextField(max_length=300)
     address = models.ForeignKey(Address, related_name='order_request', on_delete=models.SET_NULL, null=True)
-    
+    from_us = models.BooleanField(default=False)
+
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -55,6 +56,7 @@ class ResolvedOrder(models.Model):
     platform_fee = models.IntegerField(default=0, blank=True, null=True)
     cost = models.IntegerField()
     status = models.CharField(max_length=2, choices=STATUS_CHOICES, default='AC')
+    from_us = models.BooleanField(default=False)
 
     payment_id = models.CharField(max_length=100, blank=True, null=True)
     payment_url = models.CharField(blank=True, null=True)

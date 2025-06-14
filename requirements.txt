@@ -30,3 +30,4 @@ resend
 cloudinary
 weasyprint
 xhtml2pdf
+playwright

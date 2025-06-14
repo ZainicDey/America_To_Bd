@@ -27,6 +27,7 @@ urlpatterns = [
     path('invoice/<str:tracker>', generate_invoice_pdf, name='generate_invoice_pdf'),
     path('blog/', include('blog.urls')),
     path('contact/', include('contact.urls')),
+    path('automation/', include('automation.urls')),
 
     path(
         "request-password-reset",
