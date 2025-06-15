@@ -32,3 +32,5 @@ weasyprint
 xhtml2pdf
 
 # playwright
+beautifulsoup4
+lxml

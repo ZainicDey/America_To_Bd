@@ -36,7 +36,7 @@ ALLOWED_HOSTS = [
     'america-to-bd.vercel.app',
     'america-to-bd-git-main-zainicdeys-projects.vercel.app',
 ]
-# ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '127.0.0.1, localhostq').split(',')
+# ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '127.0.0.1, localhost').split(',')
 
 # Application definition
 
