@@ -89,35 +89,44 @@ class ProductView(viewsets.ModelViewSet):
 
     def perform_update(self, serializer):
         try:
-            image_file = self.request.FILES.get('image')
+            image_files = self.request.FILES.getlist('image')  # Multiple images
             instance = self.get_object()
 
-            if image_file:
-                # Validate image
-                is_valid, error_message = validate_image(image_file)
-                if not is_valid:
-                    raise ValueError(error_message)
-                # Delete old image if exists
-                if instance.image:
-                    try:
-                        public_id = instance.image.split('/')[-1].split('.')[0]
-                        cloudinary.uploader.destroy(public_id)
-                    except Exception as e:
-                        logger.warning(f"Failed to delete old image: {str(e)}")
+            if image_files:
+                # Delete old images
+                if instance.public_id:
+                    for pid in instance.public_id:
+                        try:
+                            cloudinary.uploader.destroy(pid)
+                        except Exception as e:
+                            logger.warning(f"Failed to delete image with public_id '{pid}': {str(e)}")
 
-                # Upload new image
-                upload_result = cloudinary.uploader.upload(
-                    image_file,
-                    folder="products",
-                    resource_type="image"
-                )
-                image_url = upload_result.get('secure_url')
-                serializer.save(image=image_url)
+                image_urls = []
+                public_ids = []
+
+                # Validate and upload new images
+                for image_file in image_files:
+                    is_valid, error_message = validate_image(image_file)
+                    if not is_valid:
+                        raise ValueError(error_message)
+
+                    upload_result = cloudinary.uploader.upload(
+                        image_file,
+                        folder="products",
+                        resource_type="image"
+                    )
+
+                    image_urls.append(upload_result.get('secure_url'))
+                    public_ids.append(upload_result.get('public_id'))  # Save full public_id now
+
+                # Save updated image URLs and public IDs
+                serializer.save(image=image_urls, public_id=public_ids)
             else:
                 serializer.save()
         except Exception as e:
             logger.error(f"Error updating product: {str(e)}")
             raise
+
     
 class CategoryView(viewsets.ModelViewSet):
     queryset = models.Category.objects.all()
