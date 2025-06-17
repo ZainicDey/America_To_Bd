@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Invoice</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 15px;
+      color: #333;
+      line-height: 1.1;
+      margin: 0;
+    }
+
+    .header {
+      margin-bottom: 8px;
+    }
+
+    .company-info {
+      font-size: 12px;
+    }
+
+    .company-info h2 {
+      {% comment %} margin: 5px 0 3px 0; {% endcomment %}
+      font-size: 18px;
+    }
+
+    .company-info p {
+      margin: 0 0 3px 0;
+      line-height: 1.2;
+    }
+
+    .logo {
+      height: 100px;
+      margin-bottom: 5px;
+    }
+
+    .invoice-title {
+      margin: 1px 0 3px 0;
+      font-size: 16px;
+    }
+
+    .status {
+      color: green;
+      font-weight: bold;
+      font-size: 16px;
+      margin: 3px 0 8px 0;
+    }
+
+    .section {
+      margin: 0;
+      margin-left: 14px;
+    }
+
+    .section div {
+      margin: 0;
+      padding: 0;
+      font-size: 16px;
+      line-height: 1.2;
+      width: 60%;
+    }
+
+    .label {
+      font-weight: bold;
+    }
+
+    .cost-section {
+      margin-top: 20px;
+      float: right;
+      width: 300px;
+      margin-left: 10px;
+      font-size: 16px;
+    }
+
+    .cost-table {
+      border: 1px solid #333;
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .cost-table td {
+      padding: 8px;
+      font-size: 16px;
+      border: none;
+      text-align: right;
+    }
+
+    .cost-table td.cost-label {
+      text-align: left;
+    }
+
+    .cost-title-row {
+      font-weight: bold;
+      background-color: #f5f5f5;
+    }
+
+    .total-row {
+      border-top: 1px solid #333;
+      font-weight: bold;
+    }
+
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="company-info">
+      <div>
+        <img src="{{ logo_path }}" alt="Logo" class="logo" />
+      </div>
+      <h2>AmericaToBD</h2>
+      <p>House No: 227 (Level: 2), Flat No: 2AN<br>
+      Lane No: 15, Lake Road,<br>
+      Mohakhali DOHS, Dhaka - 1212<br>
+      support@americatobd.com<br>
+      +8809647325475</p>
+    </div>
+  </div>
+
+  <h3 class="invoice-title">Invoice #{{ order.tracker }}</h3>
+  <div class="status">PAID</div>
+
+  <div class="section">
+    <div><span class="label">ResolvedDate:</span> {{ order.created_at|date:"F j, Y" }}</div>
+    <div><span class="label">Customer:</span> {{ order.user.get_full_name }} ({{ order.user.email }})</div>
+    {% if order.user.userinfo.phone %}
+    <div><span class="label">Phone:</span> {{ order.user.userinfo.phone }}</div>
+    {% endif %}
+    {% if formatted_address != "Address not available" %}
+    <div><span class="label">Shipping Address:</span> {{ formatted_address }}</div>
+    {% endif %}
+    <div><span class="label">Description:</span> {{ order.description|default:"N/A" }}</div>
+    <div><span class="label">Quantity:</span> {{ order.quantity }}</div>
+  </div>
+
+  <div class="cost-section">
+    <table class="cost-table">
+      <tr class="cost-title-row">
+        <td colspan="2" style="text-align: left;">Price Breakdown</td>
+      </tr>
+      <tr>
+        <td class="cost-label">USD Price:</td>
+        <td>${{ order.usd_price }}</td>
+      </tr>
+      <tr>
+        <td class="cost-label">Converted Price (BDT):</td>
+        <td>BDT {{ order.converted_price }}</td>
+      </tr>
+      <tr>
+        <td class="cost-label">Custom Fee:</td>
+        <td>BDT {{ order.custom_fee }}</td>
+      </tr>
+      <tr>
+        <td class="cost-label">Tax:</td>
+        <td>BDT {{ order.tax }}</td>
+      </tr>
+      <tr>
+        <td class="cost-label">Box Fee:</td>
+        <td>BDT {{ order.box_fee|default:0 }}</td>
+      </tr>
+      <tr>
+        <td class="cost-label">Discount:</td>
+        <td>-BDT {{ order.discount|default:0 }}</td>
+      </tr>
+      <tr class="total-row">
+        <td class="cost-label">Total Cost:</td>
+        <td>BDT {{ order.cost }}</td>
+      </tr>
+    </table>
+  </div>
+</body>
+</html>
