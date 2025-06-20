@@ -198,7 +198,8 @@ def bkash_callback(request):
 
         # Handle success
         if data.get("statusCode") == "0000" and data.get("transactionStatus") == "Completed":
-            order.update_order_status("PD")
+            order.status = "Accepted"
+            order.save()
             return redirect(FRONTEND_SUCCESS_URL)
 
         # Handle known failure
