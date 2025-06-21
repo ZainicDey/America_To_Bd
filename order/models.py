@@ -24,6 +24,8 @@ class OrderRequest(models.Model):
     address = models.ForeignKey(Address, related_name='order_request', on_delete=models.SET_NULL, null=True)
     from_us = models.BooleanField(default=False, null=True, blank=True)
 
+    is_canceled = models.BooleanField(default=False)
+    
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -179,7 +181,7 @@ class ResolvedOrder(models.Model):
             self.track_status.is_canceled = False
             self.track_status.is_ready_to_delivery = False
             self.track_status.is_received = False
-            
+
         elif status == "RD":
             self.track_status.is_paid = True
             self.track_status.is_shipped_in_usa = True

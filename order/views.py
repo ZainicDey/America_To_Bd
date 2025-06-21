@@ -27,7 +27,7 @@ class OrderRequestViewset(viewsets.ModelViewSet):
     serializer_class = serializers.OrderRequestSerializer
     queryset = models.OrderRequest.objects.all()
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
-    filterset_fields = ['user__email']
+    filterset_fields = ['user__email', 'is_canceled']
     search_fields = ['user__first_name', 'user__last_name', 'user__email']
     ordering_fields = ['created_at', 'updated_at']
 
@@ -55,16 +55,18 @@ class OrderRequestViewset(viewsets.ModelViewSet):
     
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()
-        self.perform_destroy(instance)
+        instance.is_canceled = True
+        instance.save()
 
         if request.user.is_staff:
+            full_name = instance.user.get_full_name()
             Emails.send({
                 "from": "America to BD <noreply@americatobd.com>",
                 "to": [instance.user.email],
-                "subject": "Order Request Deleted",
+                "subject": "Order Request Canceled",
                 "html": f"""
                 <h2>Order Request Deleted</h2>
-                <p>Dear {instance.user.username},</p>
+                <p>Dear {full_name},</p>
                 <p>Your order request has been deleted.</p>
                 <p>Please contact our support team for more details.</p>
                 """
