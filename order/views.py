@@ -148,13 +148,14 @@ class ResolveOrderViewset(viewsets.ModelViewSet):
             print(f"API Key starts with: {settings.RESEND_API_KEY[:10] if settings.RESEND_API_KEY else 'None'}")
 
             logger.info(f"Attempting to send email to {user.email}")
+            full_name = user.get_full_name() or user.username
             Emails.send({
                 "from": "America to BD <noreply@americatobd.com>",
                 "to": [user.email],
                 "subject": "Order Confirmation - America to BD",
                 "html": f"""
                 <h2>Your order has been confirmed!</h2>
-                <p>Dear {user.username},</p>
+                <p>Dear {full_name},</p>
                 <p>Your order has been successfully created with the following details:</p>
                 <ul>
                     <li>Tracking ID: {resolved_order.tracker}</li>

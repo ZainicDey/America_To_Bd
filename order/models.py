@@ -39,7 +39,8 @@ class ResolvedOrder(models.Model):
         ('OB', 'On Board for BD'),
         ('LB', 'Landed in BD'),
         ('RD', 'Ready to Delivery'),
-        ('UR', 'User Received')
+        ('RF', 'Refunded'),
+        ('DD', 'Delivery Done')
     ]
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     product_url = models.CharField(max_length=1000, blank=True, null=True)
@@ -123,6 +124,7 @@ class ResolvedOrder(models.Model):
                 "html": f"""
                 <h2>Your payment is cancelled</h2>
                 <p>Dear {self.user.first_name} {self.user.last_name},</p>
+                <p><strong>Order ID:</strong> {self.tracker}</p>
                 <p>Your order is cancelled. Please contact our support team for more details.</p>
                 """
             })
@@ -158,6 +160,16 @@ class ResolvedOrder(models.Model):
             self.track_status.is_ready_to_delivery = False
             self.track_status.is_received = False
 
+        elif status == "RF":
+            self.track_status.is_refunded = True
+            self.track_status.is_paid = False
+            self.track_status.is_shipped_in_usa = False
+            self.track_status.is_on_board = False
+            self.track_status.is_landed_in_bd = False
+            self.track_status.is_ready_to_delivery = False
+            self.track_status.is_received = False
+            self.track_status.refunded_time = timezone.now()
+
         elif status == "LB":
             self.track_status.is_paid = True
             self.track_status.is_shipped_in_usa = True
@@ -167,6 +179,7 @@ class ResolvedOrder(models.Model):
             self.track_status.is_canceled = False
             self.track_status.is_ready_to_delivery = False
             self.track_status.is_received = False
+            
         elif status == "RD":
             self.track_status.is_paid = True
             self.track_status.is_shipped_in_usa = True
@@ -176,8 +189,19 @@ class ResolvedOrder(models.Model):
             self.track_status.ready_to_delivery_time = timezone.now()
             self.track_status.is_received = False
             self.track_status.is_canceled = False
+
+            Emails.send({
+                "from": "America to BD <noreply@americatobd.com>",
+                "to": [self.user.email],
+                "subject": "Your order is ready to deliver - America to BD",
+                "html": f"""
+                <h2>Your order {self.tracker} will be delivered soon.</h2>
+                <p>Dear {self.user.first_name} {self.user.last_name},</p>
+                <p>Thank you for choosing America to BD!</p>
+                """
+            })
             
-        elif status == "UR":
+        elif status == "DD":
             self.track_status.is_paid = True
             self.track_status.is_shipped_in_usa = True
             self.track_status.is_received = True
@@ -217,6 +241,9 @@ class TrackingOrder(models.Model):
 
     is_received = models.BooleanField(default=False)
     received_time = models.DateTimeField(blank=True, null=True)
+    
+    is_refunded = models.BooleanField(default=False)
+    refunded_time = models.DateTimeField(blank=True, null=True)
     
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
