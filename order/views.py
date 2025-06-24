@@ -212,3 +212,25 @@ class TrackingOrderViewset(views.APIView):
             return Response(serializer.data, status=status.HTTP_200_OK)
         except models.TrackingOrder.DoesNotExist:
             return Response({'message': 'Tracker ID doesn\'t match'}, status=status.HTTP_404_NOT_FOUND)
+
+class ResolvedFullList(viewsets.ModelViewSet):
+    def get_permissions(self):
+        if self.action in ['update', 'partial_update']:
+            return [permissions.IsAdminUser()]
+        elif self.action == 'destroy':
+            return [IsOwnerOrAdmin()]
+        return [permissions.IsAuthenticated()]
+    
+    def get_queryset(self):
+        if self.request.user.is_staff:
+            return models.ResolvedOrder.objects.all()
+        else:
+            return models.ResolvedOrder.objects.filter(user=self.request.user)
+         
+    serializer_class = serializers.ResolvedOrderSerializer
+    queryset = models.ResolvedOrder.objects.all()
+    filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
+    filterset_class = CustomFilters.ResolvedOrderFilter
+    search_fields = ['tracker', 'user__email', 'user__first_name', 'user__last_name', 'user__userinfo__phone']
+    ordering_fields = ['created_at', 'updated_at']
+    pagination_class = None
