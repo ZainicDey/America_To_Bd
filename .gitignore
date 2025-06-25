@@ -1,4 +1,4 @@
 .env 
-.query
-.new_id_map
-.customer
+query.py
+new_id_map.json
+customer.json
