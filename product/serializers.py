@@ -6,7 +6,6 @@ class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Category
         fields = '__all__'
-    
 
 class ProductSerializers(serializers.ModelSerializer):
     category = serializers.SlugRelatedField(
@@ -17,6 +16,7 @@ class ProductSerializers(serializers.ModelSerializer):
     class Meta:
         model = models.Product
         fields = '__all__'
+        read_only_fields = ['id', 'image', 'public_id']
 
     def to_internal_value(self, data):
         # Convert 'category' to lowercase before field-level processing

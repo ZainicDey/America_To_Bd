@@ -120,6 +120,7 @@ class ProductView(viewsets.ModelViewSet):
                     public_ids.append(upload_result.get('public_id'))  # Save full public_id now
 
                 # Save updated image URLs and public IDs
+                print(image_urls)
                 serializer.save(image=image_urls, public_id=public_ids)
             else:
                 serializer.save()
