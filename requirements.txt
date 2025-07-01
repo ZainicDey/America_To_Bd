@@ -31,6 +31,6 @@ cloudinary
 weasyprint
 xhtml2pdf
 
-playwright
+# playwright
 beautifulsoup4
 lxml

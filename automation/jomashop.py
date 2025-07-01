@@ -15,6 +15,19 @@ def main(url):
         img_src = page.locator("img#product-main-image-gallery").get_attribute("src")
 
         if price and img_src and title:
+            price_text = price.replace("$", "")
+            price_text = price_text.replace(',', '')
+            print(price_text)
+            if '.' in price:
+                integer_part, decimal_part = price_text.split('.')
+                decimal_part = decimal_part[:2]
+                price_text = f"{integer_part}.{decimal_part}"
+            try:
+                price = float(price_text)
+            except ValueError:
+                price = None
+            print(price)
+
             product_data = {
                 "title": title,
                 "image": img_src,
