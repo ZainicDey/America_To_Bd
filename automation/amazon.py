@@ -20,6 +20,8 @@ def get_amazon_product_data(url):
     title_tag = bsobj.find(id="productTitle")
     title = title_tag.text.strip() if title_tag else None
 
+    print(title)
+
     container = bsobj.select_one('div.a-section.a-spacing-none.aok-align-center.aok-relative')
     if container:
         price_elem = container.select_one('span.aok-offscreen')
@@ -55,7 +57,24 @@ def get_amazon_product_data(url):
 
     image_tag = bsobj.find("img", {"id": "landingImage"})
     image_url = image_tag['src'] if image_tag else None
-    # print(title, image_url, price)
+    
+    if price is None:
+        soup1 = soup(html.content, "html.parser")
+
+        soup2 = soup(soup1.prettify(), "html.parser")
+
+        price = soup2.find( class_='aok-offscreen').get_text(strip=True)
+        if price:
+            price = price.replace('$', '').replace(',', '')
+            if '.' in price:
+                integer_part, decimal_part = price.split('.')
+                decimal_part = decimal_part[:2]
+                price = f"{integer_part}.{decimal_part}"
+            try:
+                price = float(price)
+            except ValueError:
+                price = None
+    print(price)
     if title and image_url and price:
         return {
             "title": title,

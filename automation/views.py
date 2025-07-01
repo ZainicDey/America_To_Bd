@@ -84,6 +84,7 @@ class ReturnData(views.APIView):
                     "image": result["image"],
                     "price": result["price"]
                 }
+                print(f"haha {result['title']}")
             else:
                 return Response({"message": "Failed to fetch data"}, status=500)
         import math
