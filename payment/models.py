@@ -31,3 +31,15 @@ class MannualPayment(models.Model):
 class BkashToken(models.Model):
     token = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
+
+
+
+# 01770618575
+# * 01770618575
+# * 01929918378
+# * 01770618576
+# •01877722345
+# * 01619777282
+# * 01619777283
+# otp: 123456
+# pin: 12121

@@ -267,7 +267,7 @@ SUPPORT_EMAIL = 'support@example.com'  # Your support email
 
 
 # bKash Settings
-BKASH_BASE_URL = "https://tokenized.pay.bka.sh/v1.2.0-beta"  # Sandbox URL
+BKASH_BASE_URL = "https://tokenized.sandbox.bka.sh/v1.2.0-beta"  # Sandbox URL
 BKASH_APP_KEY = os.getenv('BKASH_APP_KEY', 'your-app-key')  # Get from environment variable
 BKASH_APP_SECRET = os.getenv('BKASH_APP_SECRET', 'your-app-secret')  # Get from environment variable
 BKASH_USERNAME = os.getenv('BKASH_USERNAME', 'your-username')  # Get from environment variable
@@ -276,6 +276,7 @@ BKASH_PASSWORD = os.getenv('BKASH_PASSWORD', 'your-password')  # Get from enviro
 # bKash Callback and Frontend URLs
 BKASH_CALLBACK_URL = os.getenv('BKASH_CALLBACK_URL')
 BKASH_PRODUCT_CALLBACK_URL = os.getenv('BKASH_PRODUCT_CALLBACK_URL')
+BKASH_AUTOMATION_CALLBACK_URL = os.getenv('BKASH_AUTOMATION_CALLBACK_URL')
 BKASH_PAYMENT_MODE = "0011"  # For Checkout URL
 FRONTEND_URL = os.getenv('FRONTEND_URL')
 FRONTEND_SUCCESS_URL = os.getenv('FRONTEND_SUCCESS_URL')

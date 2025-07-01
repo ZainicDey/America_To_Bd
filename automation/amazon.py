@@ -23,6 +23,7 @@ def get_amazon_product_data(url):
     container = bsobj.select_one('div.a-section.a-spacing-none.aok-align-center.aok-relative')
     if container:
         price_elem = container.select_one('span.aok-offscreen')
+        # print(price_elem)
         if price_elem:
             price_text = price_elem.text.strip().replace('$', '')
             if '.' in price_text:
@@ -54,7 +55,7 @@ def get_amazon_product_data(url):
 
     image_tag = bsobj.find("img", {"id": "landingImage"})
     image_url = image_tag['src'] if image_tag else None
-    
+    # print(title, image_url, price)
     if title and image_url and price:
         return {
             "title": title,

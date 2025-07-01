@@ -28,7 +28,10 @@ def get_nike_product_data(url):
     # Extract Price
     price_tag = bsobj.select_one('span[data-testid="currentPrice-container"]')
     price = price_tag.text.strip() if price_tag else None
-
+    if price:
+        price = float(price.strip('£')) if price else None
+    else:
+        price = None
 
     # Extract First Image
     image_tag = bsobj.select_one('img[data-testid="mobile-image-carousel-image"]')

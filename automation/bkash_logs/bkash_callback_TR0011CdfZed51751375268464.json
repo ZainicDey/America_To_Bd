@@ -1,0 +1,12 @@
+{
+    "paymentID": "TR0011CdfZed51751375268464",
+    "createTime": "2025-07-01T13:08:11.123709",
+    "orgLogo": "",
+    "orgName": "",
+    "transactionStatus": "Completed",
+    "trxId": "CG140N22R0",
+    "amount": "725",
+    "currency": "BDT",
+    "intent": "",
+    "merchantInvoiceNumber": "20"
+}

@@ -19,6 +19,7 @@ def get_walmart_product_data(url):
     # Extract Price
     price_tag = bsobj.select_one('span[itemprop="price"][data-seo-id="hero-price"]')
     price = price_tag.text.strip() if price_tag else None
+    price = float(price.strip('$')) if price else None
 
     # Extract Image URL
     image_tag = bsobj.select_one('img[data-testid="hero-image"][data-seo-id="hero-image"]')
