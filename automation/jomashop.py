@@ -7,7 +7,7 @@ def main(url):
         page.goto(url)
         
         title = page.title()
-
+        print(title)
         # Grab the price text inside the first span within .now-price div
         price = page.locator("div.now-price > span").first.text_content()
 
