@@ -21,10 +21,10 @@ from resetpassword import views
 from django.http import JsonResponse
 
 # Directly returning a JSON response for 404 errors
-# handler404 = lambda request, exception: JsonResponse({'message': 'Endpoint not found'}, status=404)
+handler404 = lambda request, exception: JsonResponse({'message': 'Endpoint not found'}, status=404)
 
 # Directly returning a JSON response for 500 errors
-# handler500 = lambda request: JsonResponse({'message': 'Internal server error'}, status=500)
+handler500 = lambda request: JsonResponse({'message': 'Internal server error'}, status=500)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
