@@ -149,37 +149,48 @@ tmpPostgres = urlparse(os.getenv("DATABASE_URL"))
 #     }
 # }
 
-if ENVIRONMENT == 'production':
-    DATABASES = {
+DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql',
             'NAME': os.getenv('DB_NAME'),
-            'USER': os.getenv('DB_USER'),
-            'PASSWORD': os.getenv('DB_PASSWORD'),
-            'HOST': os.getenv('DB_HOST'),
-            'PORT': os.getenv('DB_PORT', '5432'),
+            'USER': "postgres.tzbtyqlwttmtdilbmkrh",
+            'PASSWORD': "tj8*vNMN4M2$n3?",
+            'HOST': "aws-0-us-east-2.pooler.supabase.com",
+            'PORT': "6543",
         }
     }
 
-elif ENVIRONMENT == 'local':
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.postgresql',
-            'NAME': 'hello',
-            'USER': 'postgres',
-            'PASSWORD': '123',
-            'HOST': 'localhost',
-            'PORT': '5432'
-        }
-    }
+# if ENVIRONMENT == 'production':
+#     DATABASES = {
+#         'default': {
+#             'ENGINE': 'django.db.backends.postgresql',
+#             'NAME': os.getenv('DB_NAME'),
+#             'USER': os.getenv('DB_USER'),
+#             'PASSWORD': os.getenv('DB_PASSWORD'),
+#             'HOST': os.getenv('DB_HOST'),
+#             'PORT': os.getenv('DB_PORT', '5432'),
+#         }
+#     }
 
-else:  # default to SQLite for local
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': BASE_DIR / 'db.sqlite3',
-        }
-    }
+# elif ENVIRONMENT == 'local':
+#     DATABASES = {
+#         'default': {
+#             'ENGINE': 'django.db.backends.postgresql',
+#             'NAME': 'hello',
+#             'USER': 'postgres',
+#             'PASSWORD': '123',
+#             'HOST': 'localhost',
+#             'PORT': '5432'
+#         }
+#     }
+
+# else:  # default to SQLite for local
+#     DATABASES = {
+#         'default': {
+#             'ENGINE': 'django.db.backends.sqlite3',
+#             'NAME': BASE_DIR / 'db.sqlite3',
+#         }
+#     }
 
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
