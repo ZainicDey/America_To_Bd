@@ -5,10 +5,10 @@ from userrole.models import Address
 class AutomatedOrder(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='automated_orders')
 
-    title = models.CharField(max_length=300)
-    image = models.CharField(max_length=500)
+    title = models.CharField(max_length=1000)
+    image = models.CharField(max_length=1000)
     price = models.FloatField()
-    url = models.CharField(max_length=500, null=True, blank=True)
+    url = models.CharField(max_length=1000, null=True, blank=True)
 
     #before order
     address = models.ForeignKey(Address, on_delete=models.CASCADE, null=True, blank=True, related_name="automated_orders")
