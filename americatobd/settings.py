@@ -139,28 +139,28 @@ from urllib.parse import urlparse
 tmpPostgres = urlparse(os.getenv("DATABASE_URL"))
 
 #production
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': tmpPostgres.path.replace('/', ''),
-        'USER': tmpPostgres.username,
-        'PASSWORD': tmpPostgres.password,
-        'HOST': tmpPostgres.hostname,
-        'PORT': 5432,
-    }
-}
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': tmpPostgres.path.replace('/', ''),
+#         'USER': tmpPostgres.username,
+#         'PASSWORD': tmpPostgres.password,
+#         'HOST': tmpPostgres.hostname,
+#         'PORT': 5432,
+#     }
+# }
 
 #test
-# DATABASES = {
-#         'default': {
-#             'ENGINE': 'django.db.backends.postgresql',
-#             'NAME': os.getenv('DB_NAME'),
-#             'USER': "postgres.tzbtyqlwttmtdilbmkrh",
-#             'PASSWORD': "tj8*vNMN4M2$n3?",
-#             'HOST': "aws-0-us-east-2.pooler.supabase.com",
-#             'PORT': "6543",
-#         }
-#     }
+DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': os.getenv('DB_NAME'),
+            'USER': "postgres.tzbtyqlwttmtdilbmkrh",
+            'PASSWORD': "tj8*vNMN4M2$n3?",
+            'HOST': "aws-0-us-east-2.pooler.supabase.com",
+            'PORT': "6543",
+        }
+    }
 
 # if ENVIRONMENT == 'production':
 #     DATABASES = {
