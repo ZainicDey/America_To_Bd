@@ -6,7 +6,11 @@ from rest_framework import permissions
 from urllib.parse import urlparse
 from order.models import ResolvedOrder
 from userrole.models import Address
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework import filters
+
 domains = ["amazon.com", "nike.com", "ebay.com", "jomashop.com", "walmart.com"]
+
 
 def is_valid_url(url):
     try:
@@ -100,6 +104,10 @@ class ReturnData(views.APIView):
     
 class OrderData(ModelViewSet):
     serializer_class = serializers.AutomationSerializer
+    filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
+    filterset_fields = ['user__email', 'status']
+    search_fields = ['user__first_name', 'user__last_name', 'user__email']
+    ordering_fields = ['created_at', 'updated_at']
     
     def get_permissions(self):
         if self.action in ['update', 'partial_update', 'destroy']:
