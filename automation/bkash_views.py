@@ -13,6 +13,7 @@ from django.utils.timezone import now
 
 from payment.models import BkashToken
 
+from resend import Emails
 logger = logging.getLogger(__name__)
 
 BKASH_BASE_URL = settings.BKASH_BASE_URL
@@ -200,6 +201,19 @@ def bkash_callback(request):
             order.status = "accepted"
             order.cost = order.bdt_total + order.due
             order.save()
+            user = order.user
+            Emails.send({
+                "from": "America to BD <noreply@americatobd.com>",
+                "to": [user.email],
+                "subject": "Payment Confirmation - America to BD",
+                "html": f"""
+                <h2>Your payment is confirmed!</h2>
+                <p>Dear {user.first_name} {user.last_name},</p>
+                <p>Your order is being processed now. Title: {order.title}</p>
+                <p>Total cost: {order.cost}</p>
+                <p>Thank you for choosing America to BD!</p>
+                """
+            })
             return redirect(FRONTEND_SUCCESS_URL)
 
         # Handle known failure

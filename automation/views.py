@@ -8,7 +8,7 @@ from order.models import ResolvedOrder
 from userrole.models import Address
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters
-
+from resend import Emails
 domains = ["amazon.com", "nike.com", "ebay.com", "jomashop.com", "walmart.com"]
 
 
@@ -165,4 +165,56 @@ class OrderData(ModelViewSet):
             }, status=201)
         except Exception as e:
             return Response({"message": str(e)}, status=500)
-        
+    
+    def patch(self, request, pk=None):
+        try:
+            order = models.AutomatedOrder.objects.get(id=pk)
+
+            # Handle status-only patch
+            if len(request.data) == 1 and 'status' in request.data:
+                new_status = request.data['status']
+                valid_statuses = dict(models.AutomatedOrder.STATUS_CHOICES).keys()
+                
+                if new_status not in valid_statuses:
+                    return Response({"message": "Invalid status"}, status=400)
+
+                order.status = new_status
+                order.save()
+
+                if new_status == "delivered":
+                    user = order.user
+                    Emails.send({
+                        "from": "America to BD <noreply@americatobd.com>",
+                        "to": [user.email],
+                        "subject": "Your order is ready to deliver - America to BD",
+                        "html": f"""
+                            <h2>Your order Title: {order.title} is delivered.</h2>
+                            <p>Dear {user.first_name} {user.last_name},</p>
+                            <p>Thank you for choosing America to BD!</p>
+                        """
+                    })
+
+                return Response({"message": f"Order {order.id} status updated to {new_status}"}, status=200)
+
+            # Otherwise handle via serializer
+            serializer = serializers.AutomationSerializer(order, data=request.data, partial=True)
+            serializer.is_valid(raise_exception=True)
+            Emails.send({
+                        "from": "America to BD <noreply@americatobd.com>",
+                        "to": [user.email],
+                        "subject": "Admin has added additional information/cost to your order - America to BD",
+                        "html": f"""
+                            <h2>Your order Title: {order.title} is ready to be paid one last time.</h2>
+                            <p>Dear {user.first_name} {user.last_name},</p>
+                            <p>Please pay your last due payment amounts:{order.due}tk to complete the order.</p>
+                        """
+                    })
+            serializer.save()
+            return Response(serializer.data, status=200)
+
+        except models.AutomatedOrder.DoesNotExist:
+            return Response({"message": "Order not found"}, status=404)
+        except Exception as e:
+            return Response({"message": str(e)}, status=500)
+
+            
