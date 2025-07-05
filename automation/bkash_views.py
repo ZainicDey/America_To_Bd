@@ -167,11 +167,11 @@ def bkash_callback(request):
             response = requests.post(exec_url, json={"paymentID": payment_id}, headers=headers)
             data = response.json()
         except requests.exceptions.RequestException as e:
-            order.delete() if order else None
+            order.delete() if order and order.status == 'pending' else None
             logger.error(f"Execute request failed: {str(e)}")
             return redirect(FRONTEND_FAILURE_URL)
         except ValueError:
-            order.delete() if order else None
+            order.delete() if order and order.status == 'pending' else None
             logger.error(f"Invalid JSON in execute response")
             return redirect(FRONTEND_FAILURE_URL)
 
