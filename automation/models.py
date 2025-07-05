@@ -4,8 +4,8 @@ from userrole.models import Address
 # Create your models here.
 class AutomatedOrder(models.Model):
     STATUS_CHOICES = [
-        ('pending', 'Payment Due'),
-        ('due', 'Payment Due'),
+        ('pending', 'Pending'),
+        ('due', 'Due'),
         ('accepted', 'Payment Accepted'),
         ('delivered', 'Delivered')
     ]

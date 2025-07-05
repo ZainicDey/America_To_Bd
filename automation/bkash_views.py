@@ -198,6 +198,7 @@ def bkash_callback(request):
             if order.status == "pending":
                 return redirect(FRONTEND_SUCCESS_URL)
             order.status = "accepted"
+            order.cost = order.bdt_total + order.due
             order.save()
             return redirect(FRONTEND_SUCCESS_URL)
 
