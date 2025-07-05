@@ -138,6 +138,7 @@ WSGI_APPLICATION = 'americatobd.wsgi.application'
 from urllib.parse import urlparse
 tmpPostgres = urlparse(os.getenv("DATABASE_URL"))
 
+#production
 # DATABASES = {
 #     'default': {
 #         'ENGINE': 'django.db.backends.postgresql',
@@ -149,6 +150,7 @@ tmpPostgres = urlparse(os.getenv("DATABASE_URL"))
 #     }
 # }
 
+#test
 DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql',

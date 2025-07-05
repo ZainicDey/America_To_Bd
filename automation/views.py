@@ -145,7 +145,7 @@ class OrderData(ModelViewSet):
                 dollar_rate=data.get("dollar_rate", 125.0),
                 bdt_total=data.get("bdt_total", 0.0)*data.get("quantity", 1),
             )
-            if order.status != "PD":
+            if order.status != "due":
                 return Response({"message": "Order is already paid"}, status=400)
             print(order.id)
             bkash_url = bkash_views.start_payment(order.id)

@@ -81,7 +81,7 @@ def start_payment(id):
             "payerReference": str(order.user.email),
             "callbackURL": BKASH_CALLBACK_URL,
             # "amount": str(1),
-            "amount": str(order.bdt_total) if order.status == "PD" else str(order.due),
+            "amount": str(order.bdt_total) if order.status == "pending" else str(order.due),
             "currency": "BDT",
             "intent": "sale",
             "merchantInvoiceNumber": order.id
@@ -195,27 +195,10 @@ def bkash_callback(request):
 
         # Handle success
         if data.get("statusCode") == "0000" and data.get("transactionStatus") == "Completed":
-            if order.status == "PD":
+            if order.status == "pending":
                 return redirect(FRONTEND_SUCCESS_URL)
-            resolved_order = ResolvedOrder.objects.create(
-                user=order.user,
-                product_url=order.url,
-                quantity=order.quantity,
-                tax=order.us_tax_amount_in_usd,
-                usd_price=order.us_total,
-                converted_price=order.bdt_total,
-                address=order.address,
-                discount=order.discount,
-                custom_fee=order.custom_fee,
-                weight_fee=order.weight_fee,
-                box_fee=order.box_fee,
-                platform_fee=order.platform_fee,
-                cost=order.due + order.bdt_total,
-                payment_id=payment_id,
-                payment_url=order.payment_url,
-            )
-            resolved_order.update_order_status("PD")
-            order.delete() if order else None
+            order.status = "accepted"
+            order.save()
             return redirect(FRONTEND_SUCCESS_URL)
 
         # Handle known failure

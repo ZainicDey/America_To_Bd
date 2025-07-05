@@ -3,6 +3,12 @@ from django.contrib.auth.models import User
 from userrole.models import Address
 # Create your models here.
 class AutomatedOrder(models.Model):
+    STATUS_CHOICES = [
+        ('pending', 'Payment Due'),
+        ('due', 'Payment Due'),
+        ('accepted', 'Payment Accepted'),
+        ('delivered', 'Delivered')
+    ]
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='automated_orders')
 
     title = models.CharField(max_length=1000)
@@ -29,7 +35,9 @@ class AutomatedOrder(models.Model):
     discount = models.IntegerField(default=0, blank=True, null=True)
     platform_fee = models.IntegerField(default=0, blank=True, null=True)
     due = models.IntegerField(default=0, blank=True, null=True) #due conditional
-    status = models.CharField(max_length=50, default='PD')
+
+    cost = models.IntegerField(default=0, blank=True, null=True)
+    status = models.CharField(max_length=10, default='due', choices=STATUS_CHOICES)
 
     payment_id = models.CharField(max_length=100, blank=True, null=True)
     payment_url = models.CharField(blank=True, null=True)
