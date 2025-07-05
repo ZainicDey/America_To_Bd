@@ -82,12 +82,13 @@ def start_payment(id):
             "payerReference": str(order.user.email),
             "callbackURL": BKASH_CALLBACK_URL,
             # "amount": str(1),
-            "amount": str(order.bdt_total) if order.status == "pending" else str(order.due - order.discount),
+            "amount": str(order.bdt_total) if order.status == "pending" else str(order.due - order.discount if order.discount is not None else 0),
             "currency": "BDT",
             "intent": "sale",
             "merchantInvoiceNumber": order.id
         }
         print(BKASH_CALLBACK_URL)
+        print(order.status)
         headers = {
             "Authorization": token,
             "X-APP-Key": APP_KEY,
