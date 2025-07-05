@@ -82,7 +82,7 @@ def start_payment(id):
             "payerReference": str(order.user.email),
             "callbackURL": BKASH_CALLBACK_URL,
             # "amount": str(1),
-            "amount": str(order.bdt_total) if order.status == "pending" else str(order.due),
+            "amount": str(order.bdt_total) if order.status == "pending" else str(order.due - order.discount),
             "currency": "BDT",
             "intent": "sale",
             "merchantInvoiceNumber": order.id
@@ -199,7 +199,7 @@ def bkash_callback(request):
             if order.status == "pending":
                 return redirect(FRONTEND_SUCCESS_URL)
             order.status = "accepted"
-            order.cost = order.bdt_total + order.due
+            order.cost = order.bdt_total + order.due - (order.discount if order.discount is not None else 0)
             order.save()
             user = order.user
             Emails.send({

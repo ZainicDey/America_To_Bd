@@ -37,7 +37,7 @@ class AutomatedOrder(models.Model):
     due = models.IntegerField(default=0, blank=True, null=True) #due conditional
 
     cost = models.IntegerField(default=0, blank=True, null=True)
-    status = models.CharField(max_length=10, default='due', choices=STATUS_CHOICES)
+    status = models.CharField(max_length=15, default='due', choices=STATUS_CHOICES)
 
     payment_id = models.CharField(max_length=100, blank=True, null=True)
     payment_url = models.CharField(blank=True, null=True)
