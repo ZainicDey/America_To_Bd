@@ -100,12 +100,14 @@ CORS_ALLOWED_ORIGINS = [
     "https://americatobd.com",
     "https://www.americatobd.com",
     "https://starfish-app-9bx4b.ondigitalocean.app",
+    "http://localhost:3000",
 ]
 
 CSRF_TRUSTED_ORIGINS = [
     "https://starfish-app-9bx4b.ondigitalocean.app",
     "https://americatobd.com",
     "https://www.americatobd.com",
+    "http://localhost:3000",
 ]
 
 CORS_ALLOW_METHODS = ["DELETE", "GET", "OPTIONS", "PATCH", "POST", "PUT"]
