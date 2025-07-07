@@ -54,7 +54,7 @@ def get_ebay_product_data(url):
             image_url = None
     else:
         image_url = None
-    
+    price = None
     if title and image_url and price:
         return {
             "title": title,
