@@ -153,17 +153,27 @@ tmpPostgres = urlparse(os.getenv("DATABASE_URL"))
 # }
 
 #test
+# DATABASES = {
+#         'default': {
+#             'ENGINE': 'django.db.backends.postgresql',
+#             'NAME': os.getenv('DB_NAME'),
+#             'USER': "postgres.tzbtyqlwttmtdilbmkrh",
+#             'PASSWORD': "tj8*vNMN4M2$n3?",
+#             'HOST': "aws-0-us-east-2.pooler.supabase.com",
+#             'PORT': "6543",
+#         }
+#     }
+
 DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql',
             'NAME': os.getenv('DB_NAME'),
-            'USER': "postgres.tzbtyqlwttmtdilbmkrh",
-            'PASSWORD': "tj8*vNMN4M2$n3?",
-            'HOST': "aws-0-us-east-2.pooler.supabase.com",
-            'PORT': "6543",
+            'USER': os.getenv('DB_USER'),
+            'PASSWORD': os.getenv('DB_PASSWORD'),
+            'HOST': os.getenv('DB_HOST'),
+            'PORT': os.getenv('DB_PORT', '5432'),
         }
-    }
-
+}
 # if ENVIRONMENT == 'production':
 #     DATABASES = {
 #         'default': {

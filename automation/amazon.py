@@ -75,7 +75,7 @@ def get_amazon_product_data(url):
             except ValueError:
                 price = None
     print(price)
-    price = None
+    # price = None
     if title and image_url and price:
         return {
             "title": title,

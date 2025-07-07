@@ -37,7 +37,7 @@ def get_nike_product_data(url):
     image_tag = bsobj.select_one('img[data-testid="mobile-image-carousel-image"]')
     image_url = image_tag['src'] if image_tag and image_tag.has_attr('src') else None
 
-    price = None
+    # price = None
     if title and image_url and price:
         return {
             "title": title,
